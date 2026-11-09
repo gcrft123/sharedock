@@ -27,11 +27,11 @@ A small control plane on Cloudflare handles accounts, device pairing, and a rela
           accounts · pairing · licenses · relay · serves the web console
                │ relay (ciphertext only)          │ signaling
      ┌─────────┴─────────┐              ┌─────────┴─────────┐
-     │ web console        │              │ desktop app        │
-     │ (browser, relay)   │              │ (Tauri, native)    │
+     │ web console       │              │ desktop app       │
+     │ (browser, relay)  │              │ (Tauri, native)   │
      └─────────┬─────────┘              └─────────┬─────────┘
                └──────────── E2EE RPC ────────────┤ direct QUIC (Iroh)
-                                                   ▼
+                                                  ▼
                                          host agent (pc-daemon)
                                          encrypted chunk store
 ```
