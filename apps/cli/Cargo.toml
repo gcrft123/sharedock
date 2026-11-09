@@ -1,0 +1,16 @@
+[package]
+name = "pc-cli"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "pc-cli"
+path = "src/main.rs"
+
+[dependencies]
+client-core = { workspace = true }
+core-crypto = { workspace = true }
+tokio = { workspace = true }
+anyhow.workspace = true

@@ -1,0 +1,63 @@
+name = "personal-cloud-control-plane"
+main = "src/worker.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Per-account rendezvous + MVP relay. SQLite-backed DO so it can also persist
+# lightweight presence/pairing state.
+[[durable_objects.bindings]]
+name = "ACCOUNT"
+class_name = "AccountDO"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["AccountDO"]
+
+# Relational control-plane data (accounts, device pubkeys, one-time licenses,
+# share-token metadata). NEVER file contents or content keys.
+[[d1_databases]]
+binding = "DB"
+database_name = "personal-cloud"
+# Replace with the id `wrangler d1 create personal-cloud` prints. Local dev ignores it.
+database_id = "00000000-0000-0000-0000-000000000000"
+
+# Transactional email (receipts, license re-delivery, address confirmation). The `from`
+# domain must be onboarded first: `wrangler email sending enable <domain>`. Until then the
+# binding is absent at runtime and every send is a logged no-op, which nothing depends on.
+[[send_email]]
+name = "EMAIL"
+
+# Ciphertext for LARGE share links. Small shares stay inline in D1; this is what lifts the
+# old ~8 MB ceiling. CREATE THE BUCKET BEFORE DEPLOYING (`wrangler r2 bucket create
+# sharedock-shares`) — a deploy with this binding and no bucket is refused. Remove the block
+# to run without blob storage: shares then keep the smaller inline cap rather than breaking.
+[[r2_buckets]]
+binding = "SHARES"
+bucket_name = "sharedock-shares"
+
+[vars]
+# `pnpm --filter @app/control-plane dev` overrides this to "development".
+ENVIRONMENT = "production"
+# The origin the console is served from. Used for links in email and Stripe redirects.
+RP_ORIGIN = "https://REPLACE-WITH-YOUR-ORIGIN"
+# "off" gives every account a free license with no host-seat limit. To sell licenses,
+# remove this line, set the Stripe secrets below, and fill in the per-tier prices.
+BILLING = "off"
+# STRIPE_PRICE_SOLO = "price_..."
+# STRIPE_PRICE_HOME = "price_..."
+# STRIPE_PRICE_MAX  = "price_..."
+
+# Serve the web app (the SPA) from the same origin as the API + relay, so one deploy/tunnel
+# covers everything and passkeys/share-redeem work at this origin. Build the SPA first
+# (`VITE_CONTROL_URL="" pnpm -C ../../apps/web build`) so it calls this same origin.
+# `run_worker_first` lets the Worker route /api + /signal, then fall through to assets.
+[assets]
+directory = "../../apps/web/dist"
+binding = "ASSETS"
+run_worker_first = true
+not_found_handling = "single-page-application"
+
+# Secrets (set with `wrangler secret put`):
+#   CP_TOKEN_SECRET, CP_LICENSE_SEED   required in production (32 random bytes, base64url)
+#   STRIPE_API_KEY, STRIPE_WEBHOOK_SECRET   only when billing is on
+#   RELEASE_TOKEN                      only to publish desktop updates

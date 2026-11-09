@@ -1,0 +1,31 @@
+[package]
+name = "pc-daemon"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "pc-daemon"
+path = "src/main.rs"
+
+[dependencies]
+host-agent = { workspace = true }
+client-core = { workspace = true }
+core-net = { workspace = true, features = ["iroh"] }
+core-crypto = { workspace = true }
+core-proto = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+# TLS-capable control-plane client so the host can reach a deployed https:// control
+# plane (not just a localhost/http one). rustls (no OpenSSL) matches the iroh TLS stack.
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+rustls = { version = "0.23", default-features = false, features = ["ring"] }
+
+[target.'cfg(unix)'.dependencies]
+# dup2(), to route stdout/stderr into PC_LOG_FILE.
+libc = "0.2"

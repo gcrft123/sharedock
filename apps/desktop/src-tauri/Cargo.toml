@@ -1,0 +1,51 @@
+# Standalone package (excluded from the root cargo workspace on purpose — it is
+# built via `cargo tauri`, which needs cargo-tauri + system WebKit + the web
+# dist). It path-depends on the shared Rust core so the desktop app runs BOTH
+# the host role (share storage) and the client role (browse / fast transfer).
+
+# Declares that standalone status here, not only in the root manifest. The root's
+# `exclude` holds only while the repo root is the nearest workspace: from a git worktree
+# (nested inside the real checkout) cargo walks straight past it into the parent repo and
+# refuses to build. An empty table stops the walk here, wherever the crate lives.
+[workspace]
+
+[package]
+name = "pc-desktop"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+license = "AGPL-3.0-only"
+
+[lib]
+name = "pc_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "process", "time", "net", "io-util", "fs", "sync"] }
+host-agent = { path = "../../../crates/host-agent" }
+# The desktop app is THE production Iroh client, so it always enables the direct
+# QUIC fast path (relay stays the fallback). quinn/rustls in a native app is fine.
+client-core = { path = "../../../crates/client-core", features = ["iroh"] }
+core-net = { path = "../../../crates/core-net", features = ["iroh"] }
+# so the relay client's wss fallback has a rustls crypto provider (matches the daemon)
+rustls = { version = "0.23", default-features = false, features = ["ring"] }
+core-webdav = { path = "../../../crates/core-webdav" }
+core-fs = { path = "../../../crates/core-fs" }
+core-crypto = { path = "../../../crates/core-crypto" }
+core-proto = { path = "../../../crates/core-proto" }
+# Auto-update. A perpetual licence means an install may run for years without anyone
+# signing in, so a fix needs a route that does not depend on the customer noticing.
+tauri-plugin-updater = "2"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+# LSSharedFileList, to pin the mounted drive in the Finder sidebar.
+core-foundation = "0.10"
+# getuid(), to address this user's launchd GUI domain when installing the host agent.
+libc = "0.2"

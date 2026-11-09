@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Sharedock · Drive Console</title>
+    <!-- Boot guard. On old WKWebViews (Mojave/High Sierra) a parse or runtime failure in the app
+         module renders nothing, so the window is just a black screen with no feedback. This classic
+         inline script (ES5 only, runs before the module) turns any pre-mount failure into a readable
+         on-screen error. It is invisible on success and only ever fires *before* the app mounts, so
+         it never masks a running app (React handles post-mount errors). Keep it: on WebKit too old
+         for the Web Inspector to be convenient, this is the only feedback path. Pairs with the
+         `window.__booted` flag set at the top of src/main.tsx. -->
+    <script>
+      (function () {
+        var shown = false;
+
+        function appMounted() {
+          var root = document.getElementById("root");
+          return !!(window.__booted && root && root.childElementCount > 0);
+        }
+
+        function report(title, body) {
+          if (shown) {
+            var prev = document.getElementById("__boot_err_body");
+            if (prev) prev.textContent += "\n\n" + body;
+            return;
+          }
+          shown = true;
+          var box = document.createElement("div");
+          box.style.cssText =
+            "position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;margin:0;padding:16px;" +
+            "overflow:auto;background:#111;color:#f66;font:12px/1.6 ui-monospace,monospace";
+          var h = document.createElement("div");
+          h.style.cssText = "color:#fff;font-size:13px;margin-bottom:10px";
+          h.textContent = title;
+          var caps = document.createElement("div");
+          caps.style.cssText = "color:#8a8a8a;white-space:pre-wrap;margin-bottom:10px";
+          caps.textContent =
+            "UA: " + navigator.userAgent + "\ncaps: BigInt=" + (typeof BigInt) +
+            " Worker=" + (typeof Worker) +
+            " subtle=" + !!(window.crypto && window.crypto.subtle) +
+            " wasm=" + (typeof WebAssembly);
+          var pre = document.createElement("pre");
+          pre.id = "__boot_err_body";
+          pre.style.cssText = "margin:0;white-space:pre-wrap";
+          pre.textContent = body;
+          box.appendChild(h);
+          box.appendChild(caps);
+          box.appendChild(pre);
+          (document.body || document.documentElement).appendChild(box);
+        }
+
+        window.addEventListener("error", function (e) {
+          if (appMounted()) return; // a running app's errors are React's problem, not ours
+          if (!e || !e.message) return; // ignore benign sub-resource (img/css) load errors
+          report("Sharedock could not start.",
+            "error: " + e.message + "\n" + ((e.error && e.error.stack) || "") +
+            "\nat " + (e.filename || "") + ":" + (e.lineno || ""));
+        });
+
+        window.addEventListener("unhandledrejection", function (e) {
+          if (appMounted()) return;
+          var r = (e && e.reason) || {};
+          report("Sharedock could not start.", "unhandledrejection: " + (r.stack || r.message || r));
+        });
+
+        // If nothing mounted and nothing threw, still surface a message instead of a black screen.
+        setTimeout(function () {
+          if (appMounted() || shown) return;
+          report("Sharedock did not finish starting.",
+            "The app did not mount within 8s (module booted=" + !!window.__booted + ").\n" +
+            "If booted=false the app module never executed (likely a syntax/feature the WebView " +
+            "cannot parse); if booted=true it started but threw before rendering.");
+        }, 8000);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,127 @@
+<!-- @dsCard group="Docs" viewport="1440x900" name="Docs · article" subtitle="Machine chrome · calmer Space Grotesk reading body" -->
+<!-- @startingPoint section="Screens" subtitle="Docs page: sidebar nav, calm reading body, code blocks, flag table" viewport="1440x900" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docs · Dock a device · SHAREDOCK</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+.docwrap{display:grid;grid-template-columns:240px minmax(0,1fr);gap:64px;padding:40px var(--pad) 64px;max-width:1180px;margin:0 auto}
+@media (max-width:860px){.docwrap{grid-template-columns:1fr;gap:40px}.docside{position:relative;top:0}}
+.docside{position:sticky;top:84px;align-self:start;display:flex;flex-direction:column;gap:26px}
+.docside h4{margin:0 0 10px;font:500 10px/1 var(--mono);letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+.docside a{display:block;padding:6px 0;font:500 11px/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--fg-dim)}
+.docside a:hover{color:var(--fg)}
+.docside a.on{color:var(--o)}
+.doc{min-width:0}
+.doc-crumb{font:500 10.5px/1 var(--mono);letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin:0 0 22px}
+.doc-crumb b{color:var(--o);font-weight:500}
+.doc h1{font:400 clamp(2rem,4vw,3.2rem)/0.95 var(--black);letter-spacing:-.03em;text-transform:uppercase;margin:0 0 20px;color:var(--fg)}
+.doc .lead{font:500 1.15rem/1.55 var(--grot);color:var(--fg-dim);max-width:56ch;margin:0 0 34px}
+.doc h2{font:400 1.35rem/1.15 var(--black);letter-spacing:-.02em;text-transform:uppercase;margin:48px 0 16px;color:var(--fg);scroll-margin-top:84px}
+.doc h2 span{color:var(--o);font:500 12px var(--mono);letter-spacing:.16em;margin-right:12px}
+.doc p{font:400 15px/1.75 var(--grot);color:var(--fg-dim);max-width:64ch;margin:0 0 16px}
+.doc code{font:500 12.5px var(--mono);color:var(--cream);background:var(--bg-panel);padding:2px 6px;border:1px solid var(--line-2)}
+.codeblock{background:var(--bg-well);border:1px solid var(--line);padding:16px 20px;margin:20px 0;font:400 12.5px/1.8 var(--mono);color:var(--fg-dim);overflow-x:auto;white-space:pre}
+.codeblock b{color:var(--fg);font-weight:400}
+.codeblock .p{color:var(--o)}
+.flags{margin:20px 0}
+.flag{display:grid;grid-template-columns:210px minmax(0,1fr);gap:20px;padding:14px 16px}
+@media (max-width:640px){.flag{grid-template-columns:1fr;gap:6px}}
+.flag dt{font:500 12px/1.6 var(--mono);color:var(--o)}
+.flag dd{margin:0;font:400 12.5px/1.7 var(--mono);color:var(--fg-dim)}
+.warmnote{margin:34px 0;padding:22px;display:flex;flex-direction:column;gap:12px;align-items:flex-start;border:1px solid var(--line);position:relative;max-width:64ch}
+.warmnote p{margin:0;color:var(--peach)}
+.pn{margin-top:48px}
+.pn a{padding:20px;display:flex;flex-direction:column;gap:8px}
+.pn .k{font:500 10px/1 var(--mono);letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+.pn .v{font:600 1.05rem/1.3 var(--grot);color:var(--fg);transition:color .25s var(--ease)}
+.pn a:hover .v{color:var(--o)}
+</style>
+</head>
+<body class="page-scanlines">
+<div id="root"></div>
+<script type="text/babel">
+const { Nav, Terminal, PillChip, Crosshair } = window.MachineEmberDesignSystem_bd5c19;
+
+const SIDE = [
+  { h: 'Getting started', items: ['Overview', 'Install', 'Dock a device', 'Browse your files'] },
+  { h: 'Reference', items: ['sharedock add', 'sharedock sync', 'sharedock status', 'Exit codes'] },
+];
+
+function Page() {
+  const [active, setActive] = React.useState('Dock a device');
+  return (
+    <React.Fragment>
+      <Nav logo="../../assets/brand/sharedock-logo.png" links={[{ label: 'Guides', href: '#' }, { label: 'CLI', href: '#' }, { label: 'Changelog', href: '#' }]} />
+      <div className="docwrap" data-screen-label="Docs article">
+        <nav className="docside" aria-label="Docs">
+          {SIDE.map((g) => (
+            <div key={g.h}>
+              <h4>{g.h}</h4>
+              {g.items.map((it) => (
+                <a key={it} href="#" className={active === it ? 'on' : ''} onClick={(e) => { e.preventDefault(); setActive(it); }}>{it}</a>
+              ))}
+            </div>
+          ))}
+        </nav>
+        <article className="doc">
+          <p className="doc-crumb">DOCS /// GETTING STARTED /// <b>DOCK A DEVICE</b></p>
+          <h1>Dock a device</h1>
+          <p className="lead">Docking joins one old phone, laptop, or drive to your storage pool. It takes one command, and it is safe to run twice.</p>
+
+          <h2 id="prereqs"><span>01</span>Prerequisites</h2>
+          <p>You need the CLI at <code>rev 2.6</code> or later and a device on the same network. Nothing else: no account, no daemon, no open inbound port.</p>
+          <div style={{ margin: '16px 0 0' }}><PillChip tone="amber" dot>Rev 2.6 or later</PillChip></div>
+
+          <h2 id="install"><span>02</span>Install the CLI</h2>
+          <p>One line, any POSIX shell. The installer prints what it does before it does it.</p>
+          <Terminal static title="CONSOLE · INSTALL · LOCAL" lines={[
+            { t: 'cmd', text: 'curl -fsS https://get.sharedock.app | sh' },
+            { t: 'out', text: 'SHAREDOCK 2.6 INSTALLED · /usr/local/bin/sharedock' },
+          ]} minHeight={0} />
+
+          <h2 id="attach"><span>03</span>Dock</h2>
+          <p>Point the CLI at the device. The handshake encrypts both ends and starts pooling its free space.</p>
+          <div className="codeblock"><span className="p">$</span> <b>sharedock add --device A-01 --name closet-phone</b>{'\n'}LINK ESTABLISHED · ENCRYPTED · POOL JOINED{'\n'}DEVICE A-01 SERVING 128GB TO YOUR CLOUD</div>
+          <p>If the network drops during docking, the device keeps the handshake and re-syncs on reconnect. You do not need to re-run anything.</p>
+
+          <h2 id="flags"><span>04</span>Flags</h2>
+          <dl className="hairgrid flags">
+            <div className="flag"><dt>--device &lt;id&gt;</dt><dd>Device ID from <code>sharedock scan</code>. Required.</dd></div>
+            <div className="flag"><dt>--name &lt;label&gt;</dt><dd>Friendly name for the device. Defaults to its hostname.</dd></div>
+            <div className="flag"><dt>--timeout &lt;s&gt;</dt><dd>Handshake timeout in seconds. Default 30.</dd></div>
+            <div className="flag"><dt>--dry-run</dt><dd>Print the plan, touch nothing.</dd></div>
+          </dl>
+
+          <div className="warmnote cell-warm">
+            <Crosshair />
+            <PillChip tone="peach" dot>Good to know</PillChip>
+            <p>Docking is idempotent. Running it against a device that is already in the pool just verifies the link and exits clean, so you can leave it in a boot script.</p>
+          </div>
+
+          <h2 id="next"><span>05</span>Verify</h2>
+          <p>Check the pool and watch the device report in. That line is the whole product.</p>
+          <div className="codeblock"><span className="p">$</span> <b>sharedock status --device A-01</b>{'\n'}[ 08:14:22 ] A-01 ONLINE · 128GB · HEALTHY</div>
+
+          <nav className="hairgrid cols-2 pn" aria-label="Previous and next">
+            <a href="#"><span className="k">← Previous</span><span className="v">Install</span></a>
+            <a href="#" style={{ textAlign: 'right' }}><span className="k">Next →</span><span className="v">Browse your files</span></a>
+          </nav>
+        </article>
+      </div>
+      <div className="grain" aria-hidden="true"></div>
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Page />);
+</script>
+</body>
+</html>

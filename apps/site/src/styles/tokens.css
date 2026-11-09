@@ -1,0 +1,133 @@
+/* Sharedock site tokens.
+   Palette is the design system's, verbatim, with one correction: `--muted` ships as
+   #7C766C in packages/design-system/tokens/colors.css, which measures 4.40:1 on the
+   substrate and fails AA. docs/design.md documents the correction to #80796F but the token
+   file was never updated. This surface uses the corrected value.
+
+   The scale below is deliberately sparser than the console's. Same vocabulary, far
+   fewer words per view. */
+
+@font-face {
+  font-family: "Saira";
+  src: url("/brand/Saira.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/brand/JetBrainsMono.woff2") format("woff2");
+  font-weight: 100 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/brand/satoshi.woff2") format("woff2");
+  font-weight: 300 900;
+  font-display: swap;
+}
+
+:root {
+  /* substrate · near-black, never pure #000 */
+  --bg: #0a0a0a;
+  --bg-panel: #0e0d0c;
+  --bg-well: #070605;
+  --bg-deep: #050403;
+
+  /* foreground · warm near-white phosphor */
+  --fg: #f3eee7;
+  --fg-dim: #b6afa5;
+  --muted: #80796f; /* corrected from #7C766C, see header */
+  --faint: #4a453e; /* non-text marks ONLY: rules, crosshairs, disabled */
+
+  /* accent · hazard orange is the only hue in the system */
+  --o: #ff5a1f;
+  --o-bright: #ff7e33;
+  --o-ember: #c7370b;
+
+  /* the human layer · tints of the same orange, never a second hue */
+  --amber: #ffb25a;
+  --peach: #ffce9e;
+  --cream: #fff1e2;
+  --blush: #ff8a4c;
+
+  /* structure */
+  --line: rgba(243, 238, 231, 0.11);
+  --line-2: rgba(243, 238, 231, 0.06);
+  --line-ember: rgba(255, 120, 60, 0.2);
+  --edge: #1b1916;
+  --focus-ring: var(--o);
+
+  /* type families · three, not the console's four. Playfair is an app-UI flourish
+     and reads as costume at landing-page scale, so it is not loaded here. */
+  --display: "Saira", "Arial Narrow", system-ui, sans-serif;
+  /* Archivo Black was a single-weight family, so display type never needed to state a
+     weight. Saira is variable and its default instance is Thin, so every display rule
+     must set one explicitly or it renders hairline. This is that weight. */
+  --display-weight: 700;
+  --sans: "Satoshi", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* type scale · ratio >= 1.25 between steps, fluid where it matters.
+     Display max is 5.25rem: above ~6rem a page is shouting, not designing. */
+  /* Sized so the real tagline sets in four or five lines and still leaves the lead and
+     the primary button above the fold. A headline that pushes the CTA off screen is a
+     conversion bug wearing a typography costume. */
+  --t-display: clamp(2.05rem, 5vw, 4.15rem);
+  /* Fold-leading display, and the closing statement. Sits a full step below the hero
+     so nothing competes with it, and a full step above a section heading so the folds
+     that lead with a single idea actually lead with it. */
+  --t-mega: clamp(1.95rem, 4.6vw, 3.2rem);
+  --t-h2: clamp(1.5rem, 3.2vw, 2.45rem);
+  --t-h3: clamp(1.15rem, 1.7vw, 1.4rem);
+  --t-lead: clamp(1.02rem, 1.45vw, 1.2rem);
+  --t-body: 1rem;
+  --t-body-sm: 0.9375rem; /* 15px · the one step below body, for dense lists */
+  --t-data: 12.5px;
+  --t-label: 11px;
+  --t-control: 12px;
+
+  /* spacing · the design system's scale, nothing off it */
+  --sp-4: 4px;
+  --sp-6: 6px;
+  --sp-8: 8px;
+  --sp-10: 10px;
+  --sp-12: 12px;
+  --sp-14: 14px;
+  --sp-16: 16px;
+  --sp-20: 20px;
+  --sp-22: 22px;
+  --sp-26: 26px;
+  --sp-30: 30px;
+  --sp-34: 34px;
+  --sp-40: 40px;
+  --sp-48: 48px;
+  --sp-64: 64px;
+  --sp-88: 88px;
+
+  --pad: clamp(20px, 5vw, 88px);
+  --content-max: 1180px;
+  --prose-max: 62ch;
+  /* Vertical rhythm runs looser than the console's. The emptiness is the argument. */
+  --sec-y: clamp(88px, 11vw, 168px);
+  --sec-y-lg: clamp(120px, 15vw, 224px);
+
+  /* fixed control heights */
+  --h-status: 30px;
+  --h-nav: 64px;
+  --h-btn: 44px;
+  --h-btn-sm: 34px;
+
+  /* radius · the skeleton never rounds. 5px is the ember radius, controls only. */
+  --r-0: 0;
+  --r-1: 5px;
+  --r-2: 9px;
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* semantic z-scale · no arbitrary 999s */
+  --z-canvas: 0;
+  --z-content: 1;
+  --z-sticky: 20;
+  --z-nav: 30;
+}

@@ -1,0 +1,92 @@
+/* App CSS manifest. The design-system foundation (tokens + reset + texture) and the
+   webfonts load here for every screen; each page imports its own recipe CSS
+   (dashboard.css / files.css / onboarding.css) alongside its components. */
+@import "./shared/styles/ds-fonts.css";
+@import "./shared/styles/ds-foundation.css";
+@import "./shared/styles/ds-recipes.css";
+@import "./shared/styles/ds-mojave-compat.css"; /* pre-Safari-14.1 icon<->label spacing */
+
+/* ---- app shell: persistent rail + swappable main area ---- */
+html,
+body,
+#root {
+  height: 100%;
+}
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+}
+.app-main {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  overflow: auto;
+}
+.settings-placeholder {
+  padding: var(--sp-40);
+}
+
+/* "Explore with sample data" escape hatch. Demo-only chrome, but it was the last inline
+   style in the app hard-coding a colour, a 6px radius that isn't on the scale, and a bare
+   z-index of 9000 that tied with the modal scrim and the film grain. On the scale it sits
+   above modals (it must stay reachable) and below the loader. */
+.demo-exit {
+  position: fixed;
+  top: var(--sp-8);
+  right: var(--sp-8);
+  z-index: var(--z-toast);
+  height: var(--h-btn-sm);
+  padding: 0 var(--sp-12);
+  background: var(--o);
+  color: var(--bg);
+  border: 0;
+  border-radius: var(--r-1);
+  font: 700 11px/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.demo-exit:hover {
+  background: var(--o-bright);
+}
+.demo-exit:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ---- public share-redeem view ---- */
+.share-redeem {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: var(--sp-40);
+  background: var(--bg);
+}
+.share-redeem .sr-card {
+  width: min(460px, 100%);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--bg-panel);
+  padding: 40px 36px;
+  text-align: center;
+}
+.share-redeem .sr-mark {
+  font: 400 34px/1 var(--mono);
+  color: var(--o);
+  margin-bottom: 18px;
+}
+.share-redeem .sr-title {
+  font: 400 1.5rem/1.1 var(--black);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--fg);
+  margin: 10px 0;
+  word-break: break-word;
+}
+.share-redeem .sr-sub {
+  font: 400 13px/1.6 var(--mono);
+  color: var(--fg-dim);
+  margin: 0 0 22px;
+}

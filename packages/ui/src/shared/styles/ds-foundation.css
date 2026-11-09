@@ -1,0 +1,154 @@
+/* Sharedock - color tokens (spec sec 2) - one accent hue, warmth = tints of it */
+:root{
+  /* substrate - near-black, never pure #000 */
+  --bg:#0A0A0A;         /* page background */
+  --bg-panel:#0E0D0C;   /* raised panels, hovered cells */
+  --bg-well:#070605;    /* inset wells, HUD interiors, terminal body */
+  --bg-deep:#050403;    /* status bar, footer, deep insets */
+  /* foreground - warm near-white phosphor */
+  --fg:#F3EEE7;         /* primary text, headlines */
+  --fg-dim:#B6AFA5;     /* body copy, secondary text */
+  --muted:#80796F;      /* labels, metadata, telemetry. 4.52:1 on --bg (was #7C766C at
+                           4.40:1, under the 4.5 AA floor). The design system's note said
+                           this was fine for ">=11px uppercase", but 11px uppercase is not
+                           WCAG "large text" (that needs >=18px, or >=14px bold), so the
+                           allowance never held. The shift is imperceptible. */
+  --faint:#4A453E;      /* crosshair marks, disabled, and other NON-TEXT marks. 2.09:1 on
+                           --bg: this tone cannot legibly carry text at any size, so never
+                           use it as a text colour. */
+  /* accent - HAZARD ORANGE (the only accent) */
+  --o:#FF5A1F;          /* links, selection, focus, active, the one bright button */
+  --o-bright:#FF7E33;   /* hover / emphasis */
+  --o-ember:#C7370B;    /* deep end of orange gradients */
+  /* soft human-layer warmth - SAME hue family, never new accents */
+  --amber:#FFB25A;      /* soft-layer chips, kickers */
+  --peach:#FFCE9E;      /* soft-layer body text */
+  --cream:#FFF1E2;      /* warm cell headings, highlights */
+  --blush:#FF8A4C;      /* soft-layer accent + kicker labels */
+  /* the single green - terminal success line ONLY */
+  --term-green:#4AF626;
+  /* structure */
+  --line:rgba(243,238,231,0.11);   /* primary hairlines + grid gaps */
+  --line-2:rgba(243,238,231,0.06); /* faint internal dividers, blueprint grid */
+  --edge:#1B1916;                  /* giant watermark wordmark */
+  --line-ember:rgba(255,120,60,0.20); /* warm hairline accent (hover/edges) */
+  /* ---- z-index: one semantic ladder, lowest to highest ----
+     App-level layers only; a z-index inside a component's own positioned box (a crosshair
+     over a cell, a badge on a tile) stays local and small.
+     Read the order as the answer to "what must be able to cover what": a toast reporting
+     the result of an action taken inside a modal has to clear that modal, and the loader
+     has to clear everything except the texture, which is inert (pointer-events:none) and
+     sits on top of the whole screen by design.
+     This replaces an ad-hoc ladder that ran 1..9600 and had three different things
+     claiming 9000 — which is why the undo toast used to render behind the modal scrim. */
+  --z-raised:2;         /* crosshairs and marks inside a positioned cell */
+  --z-sticky:40;        /* sticky toolbars and list headers */
+  --z-selbar:50;        /* floating selection bar */
+  --z-drawer-scrim:55;  /* scrim behind a mobile drawer */
+  --z-drawer:60;        /* mobile sidebar / preview drawer */
+  --z-rail:70;          /* the persistent rail (and its bottom-bar form) */
+  --z-statusbar:900;    /* onboarding status bar */
+  --z-menu:2000;        /* context menu */
+  --z-modal:3000;       /* modal scrim + dialog */
+  --z-toast:4000;       /* toasts: must clear a modal to report its result */
+  --z-loader:5000;      /* full-screen loading overlay */
+  --z-scanlines:9000;   /* inert texture */
+  --z-grain:9100;       /* inert texture, topmost */
+  /* semantic aliases */
+  --surface-page:var(--bg);
+  --surface-raised:var(--bg-panel);
+  --surface-inset:var(--bg-well);
+  --surface-deep:var(--bg-deep);
+  --text-primary:var(--fg);
+  --text-body:var(--fg-dim);
+  --text-meta:var(--muted);
+  --text-disabled:var(--faint);
+  --accent:var(--o);
+  --accent-hover:var(--o-bright);
+  --focus-ring:var(--o);
+}
+
+/* Sharedock - type tokens (spec sec 3) - four families, four jobs, never a fifth */
+:root{
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace; /* @kind font */ /* ALL telemetry, nav, labels, machine body */
+  --grot:"Space Grotesk",system-ui,-apple-system,sans-serif; /* @kind font */ /* warm accent type, sentence case */
+  --black:"Archivo Black","Space Grotesk",system-ui,sans-serif; /* @kind font */ /* macro display, uppercase, ultra-tight */
+  --serif:"Playfair Display",Georgia,serif; /* @kind font */ /* ONE halftone word per page */
+}
+
+/* Sharedock - spatial tokens (spec sec 4) - snap everything to this scale */
+:root{
+  --sp-4:4px; --sp-6:6px; --sp-8:8px; --sp-10:10px; --sp-12:12px; --sp-14:14px;
+  --sp-16:16px; --sp-20:20px; --sp-22:22px; --sp-26:26px; --sp-30:30px;
+  --sp-34:34px; --sp-40:40px; --sp-48:48px; --sp-64:64px; --sp-88:88px;
+  --pad:clamp(20px,5vw,88px);        /* page gutter */
+  --content-max:1180px;              /* centered block max-width */
+  --sec-top:clamp(48px,7vw,96px); /* @kind spacing */ /* section header rhythm */
+  --sec-big:clamp(64px,9vw,140px); /* @kind spacing */ /* big moments */
+  /* fixed control heights */
+  --h-statusbar:30px; --h-nav:64px; --h-btn:44px; --h-btn-sm:34px; --h-chip:28px;
+  /* radius - machine skeleton stays square (grids, crosshairs, chrome, cells); warmth comes from softened corners on controls + lit objects, not blooms */
+  --r-1:5px;      /* controls - buttons */
+  --r-2:9px;      /* lit objects - HUD card, terminal window */
+  --r-pill:999px; /* the pill chip */
+}
+
+/* Sharedock - motion tokens (spec sec 6) */
+:root{
+  --ease:cubic-bezier(.22,.61,.36,1); /* @kind other */
+  --ease-out:cubic-bezier(.16,1,.3,1); /* @kind other */
+}
+
+/* base reset + page defaults */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 13.5px/1.7 var(--mono);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:var(--o);color:#0A0A0A}
+a{color:var(--o);text-decoration:none}
+a:hover{color:var(--o-bright)}
+/* ---- focus ring: two rules, in this order, and don't "modernize" them into one ----
+   `:focus-visible` is Safari 15.4+. This app's desktop GUI runs in the macOS WKWebView and
+   floors well below that (docs/host-compatibility.md), and an unknown pseudo-class
+   invalidates the entire rule rather than being ignored — so a `:focus-visible`-only ring
+   does not merely behave differently on those engines, it does not exist. The whole app
+   had no keyboard focus indicator there.
+
+   So: `:focus` is the baseline every engine can honour, and the second rule takes the ring
+   back for pointer focus only. Engines without `:focus-visible` drop that second rule (same
+   invalidation), keeping the baseline ring for mouse and keyboard alike. Slightly noisier
+   on an old webview, which is the correct way to be wrong.
+
+   Do NOT write `:focus, :focus-visible {...}` — one unknown selector invalidates the whole
+   list, taking `:focus` down with it. Do NOT write `:not(:is(:focus-visible))` either:
+   `:is()` is forgiving, so on an old engine it matches nothing, `:not()` then matches
+   everything, and the ring is removed from every focused element. */
+:focus{outline:2px solid var(--focus-ring);outline-offset:2px}
+:focus:not(:focus-visible){outline:none}
+img,svg,video{display:block;max-width:100%}
+h1,h2,h3,h4,p,dl,dd,figure{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+button,input,select,textarea{font:inherit;color:inherit}
+code,kbd,samp{font-family:var(--mono)}
+.wrap{max-width:var(--content-max);margin:0 auto}
+.sec{position:relative;padding:var(--sec-top) var(--pad);overflow:hidden}
+.sec-big{padding-top:var(--sec-big);padding-bottom:var(--sec-big)}
+
+/* texture & atmosphere (spec sec 5) - seasoning, not the meal */
+/* film grain: put <div class="grain" aria-hidden="true"></div> last in <body> */
+.grain{position:fixed;inset:0;z-index:var(--z-grain);pointer-events:none;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* global faint scanlines: class on <body> */
+.page-scanlines::before{content:"";position:fixed;inset:0;z-index:var(--z-scanlines);pointer-events:none;opacity:.35;background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.14) 2px 3px)}
+/* stronger version for hero field + terminal body only */
+.scanlines{position:relative}
+.scanlines::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.5;background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.14) 2px 3px)}
+
+/* scroll reveals: add .rv, page JS adds .is-on via IntersectionObserver (threshold .18, unobserve after) */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease-out),transform .7s var(--ease-out)}
+.rv.is-on{opacity:1;transform:none}
+/* reduced motion: reveal instantly, stop all loops (terminal renders fully typed via JS check) */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
+  .rv{opacity:1;transform:none}
+  .marquee-track{animation:none}
+  .eq i{animation:none}
+}

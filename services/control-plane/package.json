@@ -1,0 +1,21 @@
+{
+  "name": "@app/control-plane",
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --var ENVIRONMENT:development",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test:e2e": "bash test/e2e-p1.sh",
+    "test:api": "node test/cp-api.mjs",
+    "db:migrate:local": "wrangler d1 migrations apply personal-cloud --local",
+    "db:migrate": "wrangler d1 migrations apply personal-cloud --remote"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "4.20241127.0",
+    "typescript": "5.6.3",
+    "wrangler": "3.91.0"
+  }
+}

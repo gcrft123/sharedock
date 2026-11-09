@@ -1,0 +1,18 @@
+[package]
+name = "e2e"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+
+[dev-dependencies]
+host-agent = { workspace = true }
+client-core = { workspace = true }
+core-net = { workspace = true }
+core-proto = { workspace = true }
+core-crypto = { workspace = true }
+core-webdav = { workspace = true }
+tokio = { workspace = true }
+anyhow.workspace = true

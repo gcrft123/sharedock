@@ -1,0 +1,138 @@
+<!-- @dsCard group="Dashboard" viewport="1440x900" name="Telemetry dashboard" subtitle="Dense machine grid · live signals · warm accents" -->
+<!-- @startingPoint section="Screens" subtitle="Dock: stat row, transfer signal, device list with live HUD, activity log" viewport="1440x900" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dock · Your cloud · SHAREDOCK</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+.toolbar{position:sticky;top:0;z-index:800;height:64px;display:flex;align-items:center;gap:22px;padding:0 26px;background:rgba(10,10,10,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+@media (prefers-reduced-transparency:reduce){.toolbar{background:var(--bg-panel);backdrop-filter:none}}
+.tb-title{font:500 12px/1 var(--mono);letter-spacing:.2em;color:var(--o);text-transform:uppercase}
+.tb-title span{color:var(--muted)}
+.tb-note{font:500 9.5px/1 var(--mono);letter-spacing:.16em;color:var(--faint);text-transform:uppercase}
+.seg{display:flex;margin-left:auto;border:1px solid var(--line)}
+.seg button{height:32px;padding:0 14px;background:transparent;border:none;border-right:1px solid var(--line);font:500 10.5px/1 var(--mono);letter-spacing:.14em;color:var(--muted);cursor:pointer;text-transform:uppercase;transition:color .2s var(--ease)}
+.seg button:last-child{border-right:none}
+.seg button:hover{color:var(--fg)}
+.seg button.on{color:var(--o);box-shadow:inset 0 0 0 1px var(--o)}
+.dash{position:relative;padding:26px;display:flex;flex-direction:column;gap:26px;overflow:hidden}
+.drow{display:grid;gap:26px;position:relative;z-index:2}
+.drow-main{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}
+.drow-sub{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+@media (max-width:1000px){.drow-main,.drow-sub{grid-template-columns:1fr}}
+.statgrid{position:relative;z-index:2}
+.statgrid .statcell{min-height:150px}
+.panel{border:1px solid var(--line);background:var(--bg-panel);display:flex;flex-direction:column;min-width:0}
+.panel-body{padding:16px;display:flex;flex-direction:column;gap:12px;flex:1}
+.axis{display:flex;justify-content:space-between;font:500 9px/1 var(--mono);letter-spacing:.14em;color:var(--faint);text-transform:uppercase}
+.units{display:flex;flex-direction:column}
+.unit{display:grid;grid-template-columns:64px minmax(0,1fr) 120px 118px;gap:14px;align-items:center;width:100%;text-align:left;padding:11px 16px;background:transparent;border:none;border-bottom:1px solid var(--line-2);cursor:pointer;transition:background .2s var(--ease)}
+.unit:last-child{border-bottom:none}
+.unit:hover{background:var(--bg)}
+.unit.on{background:var(--bg);box-shadow:inset 2px 0 0 var(--o)}
+.unit:focus-visible{outline:2px solid var(--o);outline-offset:-2px}
+.uid{font:500 12px/1 var(--mono);letter-spacing:.1em;color:var(--fg)}
+.usite{font:400 10.5px/1 var(--mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ubar{height:6px;background:var(--bg-well);border:1px solid var(--line-2);position:relative}
+.ubar i{position:absolute;top:0;bottom:0;left:0;background:linear-gradient(90deg,var(--o-ember),var(--o-bright))}
+.ustat{justify-self:end;font:500 10px/1 var(--mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.ustat .chip{height:22px;padding:0 10px}
+</style>
+</head>
+<body class="page-scanlines">
+<div id="root"></div>
+<script type="text/babel">
+const { StatCell, HudCard, Terminal, Equalizer, PillChip, Icon } = window.MachineEmberDesignSystem_bd5c19;
+
+const UNITS = [
+  { id: 'A-01', site: 'Closet iPhone', load: 71, status: 'HEALTHY', free: '37', cap: '128', spd: '22', health: '98' },
+  { id: 'A-02', site: 'MacBook 2015', load: 64, status: 'HEALTHY', free: '184', cap: '512', spd: '88', health: '95' },
+  { id: 'A-04', site: 'Pixel 4', load: 82, status: 'HEALTHY', free: '46', cap: '256', spd: '31', health: '91' },
+  { id: 'A-05', site: 'USB drive', load: 12, status: 'IDLE', free: '56', cap: '64', spd: '18', health: '99' },
+  { id: 'A-07', site: 'Old ThinkPad', load: 91, status: 'LOW', free: '90', cap: '1000', spd: '120', health: '82' },
+  { id: 'A-09', site: 'iPad Air', load: 48, status: 'HEALTHY', free: '133', cap: '256', spd: '40', health: '97' },
+];
+
+function Status({ s }) {
+  if (s === 'LOW') return <PillChip tone="amber" dot><Icon name="danger" size={12} /> Low space</PillChip>;
+  if (s === 'IDLE') return <PillChip tone="peach" dot>Asleep</PillChip>;
+  return <span>{s}</span>;
+}
+
+function Page() {
+  const [win, setWin] = React.useState('24H');
+  const [sel, setSel] = React.useState(UNITS[0]);
+  return (
+    <React.Fragment>
+      <header className="toolbar" data-screen-label="Console toolbar">
+        <span className="tb-title"><img src="../../assets/brand/sharedock-mark.png" alt="" style={{ height: 20, width: 'auto', verticalAlign: '-0.35em', marginRight: 10 }} />DOCK /// <span>YOUR CLOUD</span></span>
+        <span className="tb-note">SAMPLE DATA</span>
+        <div className="seg" role="group" aria-label="Time window">
+          {['1H', '24H', '7D'].map((w) => (
+            <button key={w} className={win === w ? 'on' : ''} aria-pressed={win === w} onClick={() => setWin(w)}>{w}</button>
+          ))}
+        </div>
+        <button className="btn btn-sm" type="button" style={{ marginLeft: 12 }}><Icon name="refresh" size={15} /> Sync</button>
+      </header>
+      <main className="dash" data-screen-label="Your cloud">
+        <div className="hairgrid cols-4 statgrid">
+          <StatCell label="Devices docked" value={6} sub="This dock · sample" />
+          <StatCell label="Needs attention" value={1} orange sub="A-07 · low space" cross="tr" />
+          <StatCell label="Pooled" value={4.2} decimals={1} unit="TB" sub="Usable space · sample" />
+          <StatCell label="Uptime" value={99.98} decimals={2} unit="%" orange sub="Trailing 90 days · sample" cross="tr" />
+        </div>
+        <div className="drow drow-main">
+          <section className="panel" aria-label="Throughput">
+            <div className="hud-head"><span>◊ TRANSFER · ALL DEVICES</span><span className="hud-live"><span className="dot" aria-hidden="true"></span>LIVE</span></div>
+            <div className="panel-body">
+              <Equalizer bars={56} height={150} />
+              <div className="axis"><span>WINDOW · {win}</span><span>SAMPLE FEED</span><span>MB/S AGGREGATE</span></div>
+            </div>
+          </section>
+          <HudCard title={'◊ DEVICE ' + sel.id + ' · TELEMETRY'} readouts={[
+            { k: 'Used', v: String(sel.load), u: '%' },
+            { k: 'Free', v: sel.free, u: 'GB' },
+            { k: 'Read', v: sel.spd, u: 'MB/S' },
+            { k: 'Health', v: sel.health, u: '%' },
+          ]} />
+        </div>
+        <div className="drow drow-sub">
+          <section className="panel" aria-label="Units">
+            <div className="hud-head"><span><Icon name="server" size={13} style={{ marginRight: 8 }} />DEVICES · {UNITS.length} DOCKED</span><span>USED</span></div>
+            <div className="units">
+              {UNITS.map((u) => (
+                <button key={u.id} className={'unit' + (sel.id === u.id ? ' on' : '')} onClick={() => setSel(u)} aria-pressed={sel.id === u.id}>
+                  <span className="uid">{u.id}</span>
+                  <span className="usite">{u.site}</span>
+                  <span className="ubar" aria-hidden="true"><i style={{ width: u.load + '%' }}></i></span>
+                  <span className="ustat"><Status s={u.status} /></span>
+                </button>
+              ))}
+            </div>
+          </section>
+          <Terminal title="SHAREDOCK · LOG · DEVICES" minHeight={220} lines={[
+            { t: 'cmd', text: 'sharedock log --watch' },
+            { t: 'out', text: '[ 09:41:02 ] A-04 SYNCED 1.2GB · OK' },
+            { t: 'warn', text: 'WARN · A-07 LOW SPACE · 91% USED' },
+            { t: 'out', text: '[ 09:41:29 ] A-02 MIRROR VERIFIED · NOMINAL' },
+            { t: 'out', text: '[ 09:42:03 ] A-09 IDLE · SPUN DOWN' },
+            { t: 'ok', text: 'OK · POOL ONLINE · 6/6 DEVICES' },
+          ]} />
+        </div>
+      </main>
+      <div className="grain" aria-hidden="true"></div>
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Page />);
+</script>
+</body>
+</html>

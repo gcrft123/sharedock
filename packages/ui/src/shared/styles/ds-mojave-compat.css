@@ -1,0 +1,43 @@
+/* Old-macOS-WebView (Safari < 14.1) compatibility that a generic postcss transform can't
+   express: icon<->label spacing where the label is a bare TEXT NODE. Flex `gap` is dead on
+   that engine and no CSS-only gap polyfill can put margin between an element and a text node,
+   so we margin the icon elements directly. Gated to pre-14.1 engines, so modern is untouched.
+   (The generic `inset` / `place-items` / element-sibling `gap` fallbacks live in the postcss
+   plugin apps/web/postcss-mojave.cjs.) */
+@supports not (inset: 0) {
+  /* svg icons precede their text label in buttons/chips -> space after the icon */
+  .btn > svg,
+  .chip > svg,
+  .keyacts .btn > svg {
+    margin-right: 0.5em;
+  }
+  /* the arrow glyph follows the label -> space before it */
+  .btn > .btn-arrow {
+    margin-left: 0.45em;
+  }
+  /* Status pills/chips put a square dot element BEFORE a bare text label. Same text-node gap
+     problem as the buttons above: dead flex `gap` + no CSS gap-polyfill across a text node, so
+     the dot butts against the letters. Margin the dot directly. (`.ha-badge`=host-live pill,
+     `.chip i`=the little chips.) */
+  .ha-badge > .livesq {
+    margin-right: 9px;
+  }
+  .chip > i {
+    margin-right: 8px;
+  }
+  /* `.opts.two` is a 2-col GRID (native `gap` works pre-14.1), but the element also carries the
+     base `.opts` class, whose flex-`gap` fallback the postcss emits as
+     `.opts > :not(:first-child){margin-top}`. That bogus top-margin lands on the 2nd card,
+     shortening it and pushing it down. Higher specificity (0,3,0 > 0,2,0) cancels it. */
+  .opts.two > :not(:first-child) {
+    margin-top: 0;
+  }
+  /* The onboarding progress rail's ACTIVE step carries `box-shadow:0 0 0 3px` as its glow ring.
+     On old WebKit that sharp spread renders heavier than the intended faint ring, so the active
+     marker reads as bigger/offset next to the pending steps (looks misaligned). `outline` draws
+     the same ring with ZERO layout effect and a cleaner edge on that engine. */
+  .pstep.active .mk {
+    box-shadow: none;
+    outline: 3px solid rgba(255, 90, 31, 0.12);
+  }
+}

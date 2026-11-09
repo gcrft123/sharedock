@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["react", "react-dom", "vite/client"],
+    "paths": {
+      "@app/halfsteel": ["../../packages/design-system/index.d.ts"],
+      "@app/ui": ["../../packages/ui/src/index.tsx"],
+      "@app/rpc-client": ["../../packages/rpc-client-ts/src/index.ts"]
+    }
+  },
+  "include": ["src", "vite.config.ts"]
+}

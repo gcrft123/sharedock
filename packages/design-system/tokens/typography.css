@@ -1,0 +1,7 @@
+/* Sharedock · type tokens (spec §3) — four families, four jobs, never a fifth */
+:root{
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace; /* @kind font */ /* ALL telemetry, nav, labels, machine body */
+  --grot:"Space Grotesk",system-ui,-apple-system,sans-serif; /* @kind font */ /* warm accent type, sentence case */
+  --black:"Archivo Black","Space Grotesk",system-ui,sans-serif; /* @kind font */ /* macro display, uppercase, ultra-tight */
+  --serif:"Playfair Display",Georgia,serif; /* @kind font */ /* ONE halftone word per page */
+}

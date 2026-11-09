@@ -1,0 +1,162 @@
+<!-- @dsCard group="Marketing" viewport="1440x900" name="Marketing site" subtitle="Sharedock landing · machine structure, ember warmth threaded in" -->
+<!-- @startingPoint section="Screens" subtitle="Sharedock landing: hero + live HUD, feature grid, human layer, terminal, pricing" viewport="1440x900" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHAREDOCK · Personal cloud from old devices</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+.hero{position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:center;padding:48px var(--pad) 64px;min-height:calc(100dvh - 64px);overflow:hidden}
+.hero.scanlines::after{z-index:3}
+.hero-type{position:relative;z-index:2;display:flex;flex-direction:column;gap:26px;min-width:0;align-items:flex-start}
+.hero-hud{position:relative;z-index:2;width:100%;max-width:460px;justify-self:end}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px 22px;margin:0}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
+@media (max-width:960px){.hero{grid-template-columns:1fr;align-items:start}.hero-hud{justify-self:start}}
+.split{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:48px;align-items:start}
+@media (max-width:960px){.split{grid-template-columns:1fr}}
+.split-copy{display:flex;flex-direction:column;gap:22px;align-items:flex-start}
+.cta-final{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;gap:26px}
+.cta-sub{font:400 1.05rem/1.6 var(--grot);color:var(--peach);max-width:44ch}
+.samplenote{margin:14px 0 0;font:500 9.5px/1.6 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+</style>
+</head>
+<body class="page-scanlines">
+<div id="root"></div>
+<script type="text/babel">
+const { Nav, Button, Eyebrow, SectionHeader, CapabilityCell, HumanCell, StatCell, HudCard, Terminal, PricingTier, Marquee, Footer, Reticle } = window.MachineEmberDesignSystem_bd5c19;
+
+function useReveals() {
+  React.useEffect(() => {
+    const els = document.querySelectorAll('.rv');
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      els.forEach((el) => el.classList.add('is-on'));
+      return;
+    }
+    const io = new IntersectionObserver((es) => es.forEach((en) => {
+      if (en.isIntersecting) { en.target.classList.add('is-on'); io.unobserve(en.target); }
+    }), { threshold: 0.18 });
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
+
+const CAPS = [
+  { i: '01', t: 'One pooled drive', d: 'Every docked device joins one space. Old phones, laptops, drives: one library, one grammar.', k: 'Devices', v: 'Up to 8' },
+  { i: '02', t: 'Health you can read', d: 'Each device reports its own state. Quiet while healthy, plain-spoken when a disk tires.', k: 'Checks', v: 'Hourly' },
+  { i: '03', t: 'Nothing lost offline', d: 'A device that drops off buffers and re-syncs on reconnect. Gaps close themselves.', k: 'Buffer', v: '72h' },
+  { i: '04', t: 'Your keys, your files', d: 'Everything is encrypted with keys that stay on your hardware. The record does not leave.', k: 'Cipher', v: 'AES-256' },
+  { i: '05', t: 'Devices back each other up', d: 'Files mirror across the dock. Lose one device and the library stays whole.', k: 'Copies', v: '2x' },
+  { i: '06', t: 'Your files leave freely', d: 'Everything exports as plain files on demand. No lock, no proprietary vault.', k: 'Formats', v: 'Open' },
+];
+
+function Page() {
+  useReveals();
+  return (
+    <React.Fragment>
+      <Nav logo="../../assets/brand/sharedock-logo.png" links={[{ label: 'Features', href: '#capability' }, { label: 'Your data', href: '#operators' }, { label: 'Setup', href: '#console' }, { label: 'Pricing', href: '#pricing' }]} />
+      <main>
+        <section className="hero scanlines" data-screen-label="Hero">
+          <div className="hero-type">
+            <Eyebrow>[ Personal cloud · Your devices ]</Eyebrow>
+            <h1 className="t-wordmark">SHARE<br />DOCK</h1>
+            <p className="t-sub" style={{ maxWidth: '34ch' }}>Turn the old phones and laptops in your drawer into <b>one private cloud</b>. Storage you own, warmly lit.</p>
+            <div className="hero-ctas">
+              <Button variant="primary" arrow>Get started</Button>
+              <Button href="#console">See a dock</Button>
+            </div>
+          </div>
+          <div className="hero-hud"><HudCard title="◊ DEVICE A-01 · TELEMETRY" readouts={[{ k: 'Used', v: '71', u: '%' }, { k: 'Free', v: '37', u: 'GB' }, { k: 'Read', v: '22', u: 'MB/S' }, { k: 'Health', v: '98', u: '%' }]} coord="HOME NETWORK · 6 DEVICES" /></div>
+        </section>
+
+        <Marquee items={['Files that stay home', 'Get started', 'Old devices, new drive', 'Device A-01 docked']} />
+
+        <section id="capability" className="sec sec-warm" data-screen-label="Capability">
+          <div className="wrap">
+            <div className="rv"><SectionHeader title="Built to be read" note="SIX WAYS ONE DOCK KEEPS YOUR FILES SAFE" /></div>
+            <div className="hairgrid cols-3 rv">
+              {CAPS.map((c) => (
+                <CapabilityCell key={c.i} index={c.i} title={c.t} statLabel={c.k} statValue={c.v}>{c.d}</CapabilityCell>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="operators" className="sec" data-screen-label="Operators" style={{ background: 'var(--bg-deep)' }}>
+          <div className="wrap" style={{ position: 'relative', zIndex: 2 }}>
+            <div className="rv"><SectionHeader title={<React.Fragment>STORAGE THAT <span className="serif-word">stays</span> HOME</React.Fragment>} note="THE WARMEST ZONE · SAME SQUARE BONES" /></div>
+            <div className="hairgrid cols-3 rv">
+              <HumanCell chip="Private by default" chipTone="amber" title="Your files never leave.">They live on your own devices, at home. No company holds your library, and no monthly cloud bill does either.</HumanCell>
+              <HumanCell chip="Plain words" chipTone="peach" title="Alerts you can read aloud.">No codes to decode. A tired disk says so, in a plain sentence, and says what to swap first.</HumanCell>
+              <HumanCell chip="Set and forget" chipTone="cream" title="It just keeps running.">Dock a device once and it quietly serves. The old phone in your drawer earns its keep again.</HumanCell>
+            </div>
+          </div>
+        </section>
+
+        <section className="sec sec-warm" data-screen-label="Stats">
+          <div className="wrap rv">
+            <div className="hairgrid cols-4">
+              <StatCell label="Devices docked" value={6} sub="This dock · sample data" />
+              <StatCell label="Uptime" value={99.98} decimals={2} unit="%" orange sub="Trailing 90 days · sample" cross="tr" />
+              <StatCell label="Pooled" value={4.2} decimals={1} unit="TB" sub="Usable space · sample" />
+              <StatCell label="Sync time" value={1.2} decimals={1} unit="S" orange sub="Median file · sample" cross="tr" />
+            </div>
+            <p className="samplenote">SAMPLE DATA · MOCK FEED · NOT A MEASUREMENT</p>
+          </div>
+        </section>
+
+        <section id="console" className="sec" data-screen-label="Console">
+          <div className="wrap split">
+            <div className="split-copy rv">
+              <h2 className="t-h2">One command to dock</h2>
+              <p className="t-body">Plug in a device, run one line, and it joins the pool. The console speaks mono and answers fast. Everything it prints, the API returns.</p>
+              <Button href="../docs/index.html" arrow>View docs</Button>
+            </div>
+            <div className="rv"><Terminal minHeight={240} title="SHAREDOCK · /bin/sharedock · A-01" lines={[
+              { t: 'cmd', text: 'sharedock add --device A-01' },
+              { t: 'out', text: 'LINK ESTABLISHED · ENCRYPTED · REV 2.6' },
+              { t: 'cmd', text: 'sharedock status --all' },
+              { t: 'out', text: '[ 08:14:22 ] A-01 128GB · HEALTHY' },
+              { t: 'out', text: '[ 08:14:23 ] A-02 512GB · HEALTHY' },
+              { t: 'warn', text: 'WARN · A-07 LOW SPACE · 91% USED' },
+              { t: 'ok', text: 'OK · POOL ONLINE · 6/6 DEVICES' },
+            ]} /></div>
+          </div>
+        </section>
+
+        <section id="pricing" className="sec sec-warm" data-screen-label="Pricing">
+          <div className="wrap">
+            <div className="rv"><SectionHeader title="Pick a scale" note="ONE INTENT · EVERY TIER ENDS THE SAME WAY" /></div>
+            <div className="hairgrid cols-3 rv">
+              <PricingTier name="Solo" price="$0" features={['1 device', '100 GB pooled', 'Local sync', 'Open exports']} />
+              <PricingTier name="Home" price="$6" priceNote="/MO" featured features={['Up to 8 devices', 'Health alerts', 'Offsite mirror', '2x file copies']} />
+              <PricingTier name="Household" price="Custom" features={['Unlimited devices', 'Shared spaces', 'Priority support', 'Named backup']} />
+            </div>
+          </div>
+        </section>
+
+        <section className="sec sec-big" data-screen-label="Final CTA">
+          <div className="cta-final rv">
+            <h2 className="t-h2cta">Your cloud<br />stays home.</h2>
+            <p className="cta-sub">One command to dock, one library to hold it all. The drawer of old devices is loud with space. Your screen does not have to be.</p>
+            <Button variant="primary" arrow>Get started</Button>
+          </div>
+        </section>
+      </main>
+      <Footer logo="../../assets/brand/sharedock-logo.png" />
+      <Reticle />
+      <div className="grain" aria-hidden="true"></div>
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Page />);
+</script>
+</body>
+</html>

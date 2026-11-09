@@ -1,0 +1,61 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Build output
+dist/
+build/
+.cache/
+.parcel-cache/
+apps/web/dist/
+
+# Rust
+target/
+target-cross/
+**/*.rs.bk
+
+# Host/client runtime data + key material (NEVER commit)
+.pc-data/
+.pc-webdav/
+*.key
+
+# Tauri
+apps/desktop/src-tauri/target/
+apps/desktop/src-tauri/gen/
+
+# Cloudflare / Wrangler
+.wrangler/
+.dev.vars
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+!apps/web/.env.development
+
+# Editor / IDE
+.idea/
+*.swp
+*.swo
+.vscode/*
+!.vscode/extensions.json
+
+# Logs
+*.log
+
+# Local build artifacts for transfer
+artifacts/
+apps/desktop/src-tauri/binaries/
+
+# Satoshi (ITF FFL, not redistributable). Fetch with scripts/fetch-fonts.sh
+apps/site/public/brand/satoshi.woff2

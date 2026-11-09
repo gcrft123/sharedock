@@ -1,0 +1,14 @@
+/* type recipes (spec §3.1) */
+.t-wordmark{font:400 clamp(4.5rem,15vw,13rem)/0.82 var(--black);letter-spacing:-.045em;text-transform:uppercase;color:var(--fg)}
+.t-h2{font:400 clamp(2rem,5.4vw,4.6rem)/0.9 var(--black);letter-spacing:-.035em;text-transform:uppercase;color:var(--fg);max-width:16ch}
+.t-h2cta{font:400 clamp(2.6rem,9vw,7.5rem)/0.86 var(--black);letter-spacing:-.045em;text-transform:uppercase;color:var(--fg)}
+.t-sub{font:500 clamp(1.1rem,2.3vw,1.7rem)/1.4 var(--grot);letter-spacing:-.01em;color:var(--fg-dim)}
+.t-sub b{color:var(--o);font-weight:600}
+.t-body{font:400 13.5px/1.7 var(--mono);color:var(--fg-dim);max-width:46ch}
+.t-human{font:400 1rem/1.6 var(--grot);color:var(--peach);max-width:52ch}
+.t-label{font:500 11px/1.4 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.t-label-tight{font:500 10.5px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.t-stat{font:400 clamp(2.6rem,5vw,4rem)/1 var(--black);letter-spacing:-.04em;color:var(--fg)}
+.t-stat em{font:500 .32em var(--mono);font-style:normal;color:var(--o);vertical-align:super;letter-spacing:.08em}
+/* the single halftone serif word: use exactly ONCE per page, inline in an uppercase headline */
+.serif-word{font-family:var(--serif);font-style:italic;font-weight:600;text-transform:none;letter-spacing:0;color:var(--peach);-webkit-mask-image:radial-gradient(circle at center,#000 39%,transparent 42%);mask-image:radial-gradient(circle at center,#000 39%,transparent 42%);-webkit-mask-size:5px 5px;mask-size:5px 5px}

@@ -1,0 +1,35 @@
+/* Sharedock · webfonts — self-hosted (Archivo Black, Space Grotesk, JetBrains Mono,
+   Playfair Display italic). Bundled as woff2 (latin subset) next to this file rather than
+   loaded from the Google Fonts CDN: the old-macOS WebView (Mojave/High Sierra) failed to
+   pick up the CDN @import, and self-hosting also means no network dependency and no
+   @import-ordering fragility. Space Grotesk + JetBrains Mono are variable fonts (one file
+   covers 400–700 via the weight axis). Fits the "runs on your own machine, offline" model. */
+
+@font-face {
+  font-family: "Archivo Black";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/ArchivoBlack.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("../fonts/SpaceGrotesk.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("../fonts/JetBrainsMono.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/PlayfairDisplay-Italic.woff2") format("woff2");
+}

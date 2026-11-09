@@ -1,0 +1,24 @@
+<!-- @dsCard group="Components" viewport="700x340" name="Telemetry" subtitle="HudCard (signal + readouts) · Terminal (the ONLY green) · Equalizer · Reticle" -->
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;background:var(--bg);padding:20px}</style>
+</head><body>
+<div id="root"></div>
+<script type="text/babel">
+const { HudCard, Terminal } = window.MachineEmberDesignSystem_bd5c19;
+ReactDOM.createRoot(document.getElementById('root')).render(<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,alignItems:'start'}}>
+    <HudCard map={false} />
+    <Terminal static lines={[
+      { t:'cmd', text:'sharedock add --device A-01' },
+      { t:'out', text:'LINK ESTABLISHED · ENCRYPTED' },
+      { t:'cmd', text:'sharedock status --all' },
+      { t:'warn', text:'WARN · A-07 LOW SPACE 91%' },
+      { t:'ok', text:'OK · POOL ONLINE · 6/6' },
+    ]} />
+  </div>);
+</script>
+</body></html>

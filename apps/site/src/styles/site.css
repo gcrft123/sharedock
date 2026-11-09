@@ -1,0 +1,1020 @@
+/* Fold layouts. Eight folds, and no layout family repeats: asymmetric split, pinned
+   canvas, full-bleed ledger, offset prose column, plotted axis, hairline grid, centred
+   close, ruled footer. Repetition is what makes a landing page read as a template. */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ================================================================ 00 · chrome === */
+
+.statusbar {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  z-index: var(--z-nav);
+  height: var(--h-status);
+  background: var(--bg-deep);
+  border-bottom: 1px solid var(--line-2);
+}
+.statusbar-in {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  padding-left: var(--pad);
+  padding-right: var(--pad);
+}
+.sb-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-8);
+  padding: 0 var(--sp-16);
+  border-right: 1px solid var(--line-2);
+  font: 500 10.5px/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.sb-cell:first-child {
+  padding-left: 0;
+}
+.sb-cell:last-child {
+  border-right: 0;
+}
+.sb-live {
+  color: var(--fg-dim);
+}
+.sb-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--o);
+  border-radius: 0; /* the skeleton never rounds */
+  animation: blip 2.4s var(--ease) infinite;
+}
+@keyframes blip {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+/* Below the fold for the status bar's tail: it is atmosphere, not information. */
+@media (max-width: 860px) {
+  .sb-cell:nth-child(n + 3) {
+    display: none;
+  }
+}
+
+.nav {
+  position: sticky;
+  position: -webkit-sticky;
+  top: var(--h-status);
+  z-index: var(--z-nav);
+  height: var(--h-nav);
+  background: rgba(10, 10, 10, 0.72);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+/* The nav is the only element in the system permitted transparency and blur, and it
+   still owes a solid fallback. */
+@media (prefers-reduced-transparency: reduce) {
+  .nav {
+    background: var(--bg-panel);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav {
+    background: var(--bg-panel);
+  }
+}
+.nav-in {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-40);
+  height: 100%;
+  padding-left: var(--pad);
+  padding-right: var(--pad);
+}
+.nav-mark {
+  display: block;
+  flex: none;
+}
+.nav-mark img {
+  width: 132px;
+  height: auto;
+}
+.nav-links {
+  display: flex;
+  gap: var(--sp-30);
+  margin-left: auto;
+}
+.nav-link {
+  font: 500 var(--t-label) / 1 var(--mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.nav-cta {
+  flex: none;
+}
+@media (max-width: 720px) {
+  .nav-links {
+    display: none;
+  }
+  .nav-cta {
+    margin-left: auto;
+  }
+}
+
+/* ================================================================== 01 · hero === */
+
+.hero {
+  position: relative;
+  z-index: var(--z-content);
+  padding-left: var(--pad);
+  padding-right: var(--pad);
+}
+.hero-in {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  min-height: calc(100vh - var(--h-status) - var(--h-nav));
+  display: grid;
+  /* Asymmetric on purpose. The design system's anti-centre bias is load-bearing:
+     a centred hero is the single most template-shaped composition available. */
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: var(--sp-48);
+  padding: var(--sp-40) 0 var(--sp-64);
+}
+@supports (height: 100dvh) {
+  .hero-in {
+    min-height: calc(100dvh - var(--h-status) - var(--h-nav));
+  }
+}
+.hero-h1 {
+  max-width: 17ch;
+  /* Natural wrapping beats balancing here. The tagline is final copy at a known
+     length, and past three lines `balance` starts leaving a short orphan line in the
+     middle of the block. */
+  text-wrap: initial;
+}
+.hero-lead {
+  margin-top: var(--sp-30);
+}
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-16);
+  margin-top: var(--sp-40);
+}
+/* Left empty by design: the assembly canvas reads through this column, so the first
+   wireframe arrives in the hero rather than being introduced later. */
+.hero-void {
+  min-height: 1px;
+}
+/* Matches `narrow` in assembly/scene.ts. Below this there is no room beside the
+   headline for the wireframe, so the hero becomes pure type and the object waits for
+   the assembly to pin. */
+@media (max-width: 1080px) {
+  .hero-in {
+    grid-template-columns: 1fr;
+    gap: var(--sp-30);
+    align-content: center;
+  }
+  .hero-h1 {
+    max-width: 100%;
+  }
+}
+
+/* ============================================================== 02 · assembly === */
+
+/* The hero and the assembly share one fixed canvas, so the wireframe is already
+   present in the hero and the scroll simply walks toward it. No seam, no remount. */
+.narr {
+  position: relative;
+}
+.narr-canvas-wrap {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-canvas);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease);
+  /* "Not covering the entire area, just a portion." The outline emerges from the dark
+     and dissolves back into it rather than sitting inside a visible rectangle. */
+  -webkit-mask-image: radial-gradient(circle at 62% 50%, #000 0%, #000 34%, transparent 68%);
+  mask-image: radial-gradient(circle at 62% 50%, #000 0%, #000 34%, transparent 68%);
+}
+.narr-canvas-wrap[data-on="true"] {
+  opacity: 1;
+}
+.narr-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* The narrative's exit. `.surf` paints an opaque substrate, so without this its top
+   edge scrolls up over the still-visible fixed canvas and guillotines the mark: the
+   logo vanishes behind a hard horizontal line. Here the substrate arrives as an alpha
+   ramp instead of an edge and the mark sinks into the page.
+
+   It lives inside `.narr` on purpose. The canvas's IntersectionObserver watches `.narr`,
+   so keeping the band within it means the canvas is still being held visible for the
+   whole dissolve; placed after `.narr` the canvas would begin its own 0.6s fade partway
+   through and the two would fight. */
+.narr-exit {
+  position: relative;
+  z-index: var(--z-content);
+  height: 200px;
+  /* Overlaps the section below by a pixel so no seam shows at the join. */
+  margin-bottom: -1px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(10, 10, 10, 0) 0%, var(--bg) 78%);
+}
+
+.asm {
+  position: relative;
+  /* Five beats. Long enough that each reads, short enough that the scroll never feels
+     hijacked. */
+  height: 460vh;
+}
+.asm-pin {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+}
+@supports (height: 100dvh) {
+  .asm-pin {
+    height: 100dvh;
+  }
+}
+.asm-frame {
+  position: relative;
+  z-index: var(--z-content);
+  max-width: var(--content-max);
+  height: 100%;
+  margin: 0 auto;
+  padding: calc(var(--h-status) + var(--h-nav) + var(--sp-40)) var(--pad) clamp(40px, 7vh, 88px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.asm-heading {
+  max-width: 13ch;
+}
+.asm-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-30);
+}
+.asm-stages {
+  position: relative;
+  min-height: 200px;
+  width: min(34ch, 100%);
+}
+.asm-stage {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.5s var(--ease-out),
+    transform 0.5s var(--ease-out);
+}
+.asm-stage[data-on="true"] {
+  opacity: 1;
+  transform: none;
+}
+.asm-tag {
+  display: block;
+  color: var(--o);
+  margin-bottom: var(--sp-14);
+}
+.asm-line {
+  margin-top: var(--sp-12);
+  font-size: var(--t-body-sm);
+}
+.asm-spec {
+  display: block;
+  margin-top: var(--sp-16);
+  padding-top: var(--sp-12);
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font: 400 11.5px/1.5 var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.asm-ticks {
+  display: flex;
+  gap: var(--sp-6);
+  flex: none;
+  padding-bottom: var(--sp-6);
+}
+.asm-tick {
+  width: 26px;
+  height: 2px;
+  background: var(--faint);
+  transition: background-color 0.4s var(--ease);
+}
+.asm-tick[data-on="true"] {
+  background: var(--o);
+}
+@media (max-width: 900px) {
+  .asm {
+    height: 420vh;
+  }
+  .narr-canvas-wrap {
+    -webkit-mask-image: radial-gradient(circle at 50% 38%, #000 0%, #000 30%, transparent 64%);
+    mask-image: radial-gradient(circle at 50% 38%, #000 0%, #000 30%, transparent 64%);
+  }
+  .asm-stages {
+    width: 100%;
+    min-height: 220px;
+  }
+  .asm-ticks {
+    display: none;
+  }
+}
+
+/* Reduced motion and no-WebGL: unpinned, every stage readable at once. */
+.asm-static {
+  height: auto;
+  padding: var(--sec-y) 0;
+}
+/* Dividers rather than the hairline-grid technique. A grid whose gaps are painted by
+   the container's background turns every not-yet-revealed cell into a solid block of
+   line colour, because opacity fades the cell's own background away with it. */
+.asm-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--sp-48) 0 0;
+  border-top: 1px solid var(--line);
+}
+.asm-item {
+  padding: var(--sp-30) 0;
+  border-bottom: 1px solid var(--line);
+}
+.asm-item .asm-spec {
+  border-top: 0;
+  padding-top: 0;
+  margin-top: var(--sp-10);
+}
+
+/* ============================================================== 03 · surfaces === */
+
+/* Lead and support, not four equal rows. The mounted drive carries the fold at display
+   scale and takes the ember; the other three sit under it small and dense. The jump in
+   density between them is the composition. */
+.surf {
+  position: relative;
+  z-index: var(--z-content);
+  background: var(--bg);
+  padding: var(--sec-y) 0 0;
+}
+.surf-kicker {
+  display: block;
+  margin-bottom: var(--sp-30);
+}
+.surf-lead {
+  padding-bottom: clamp(48px, 6vw, 80px);
+}
+.surf-lead-name {
+  font: var(--display-weight) var(--t-mega) / 0.96 var(--display);
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  color: var(--cream);
+}
+.surf-lead-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--sp-30);
+  margin-top: var(--sp-26);
+  padding-top: var(--sp-22);
+  border-top: 1px solid var(--line-ember);
+}
+.surf-lead-line {
+  font: 400 var(--t-lead) / 1.6 var(--sans);
+  color: var(--peach);
+  max-width: 46ch;
+  text-wrap: pretty;
+}
+
+.surf-rest-in {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--line);
+}
+.surf-item {
+  padding: var(--sp-30) var(--sp-26) var(--sp-40) 0;
+  transition: background-color 0.35s var(--ease);
+}
+.surf-item + .surf-item {
+  padding-left: var(--sp-26);
+  border-left: 1px solid var(--line);
+}
+.surf-name {
+  font: 600 var(--t-h3) / 1.2 var(--sans);
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  transition: color 0.3s var(--ease);
+}
+.surf-line {
+  margin-top: var(--sp-12);
+  font-size: var(--t-body-sm);
+  color: var(--fg-dim);
+}
+.surf-meta {
+  display: block;
+  margin-top: var(--sp-16);
+  font: 400 11px/1.5 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.surf-lead .surf-meta {
+  margin-top: 0;
+  color: var(--amber);
+}
+/* Warms in place. Never lifts, never scales, never translates. */
+.surf-item:hover {
+  background: linear-gradient(180deg, rgba(255, 138, 76, 0.045), transparent 58%) var(--bg-panel);
+}
+.surf-item:hover .surf-name {
+  color: var(--o);
+}
+@media (max-width: 860px) {
+  .surf-rest-in {
+    grid-template-columns: 1fr;
+  }
+  .surf-item {
+    padding: var(--sp-26) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .surf-item + .surf-item {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .surf-lead-body {
+    grid-template-columns: 1fr;
+    gap: var(--sp-12);
+  }
+  .surf-meta {
+    white-space: normal;
+  }
+}
+
+/* =============================================================== 04 · privacy === */
+
+/* One enormous claim over a dense strip of mechanisms. The scale gap is the argument:
+   the promise is human-sized, the proof is machine-sized, and the distance between them
+   is the 85/15 split made literal instead of described. */
+.priv {
+  position: relative;
+  z-index: var(--z-content);
+  background: var(--bg);
+  padding: var(--sec-y-lg) 0;
+}
+.priv-claim {
+  font: var(--display-weight) var(--t-mega) / 0.98 var(--display);
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  color: var(--fg);
+  max-width: 15ch;
+  text-wrap: balance;
+}
+.priv-lead {
+  margin-top: var(--sp-30);
+  max-width: 46ch;
+}
+/* The hairlines run the full width of the viewport, but the type inside stays on the
+   page's column. Bleeding the rules is the bold move; bleeding the text with them just
+   looks like a broken container. */
+.priv-strip {
+  margin: clamp(48px, 7vw, 88px) 0 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.priv-strip-in {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0 var(--pad);
+}
+.priv-cell {
+  padding: var(--sp-30) var(--sp-22) var(--sp-34);
+}
+.priv-cell:first-child {
+  padding-left: 0;
+}
+.priv-cell + .priv-cell {
+  border-left: 1px solid var(--line);
+}
+.priv-mech {
+  font: 500 11.5px/1.45 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--o);
+}
+.priv-note {
+  margin: var(--sp-14) 0 0;
+  font-size: var(--t-body-sm);
+  color: var(--fg-dim);
+}
+.priv-caveat {
+  margin-top: clamp(40px, 5vw, 64px);
+  padding-top: var(--sp-20);
+  border-top: 1px solid var(--line-ember);
+}
+@media (max-width: 860px) {
+  .priv-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .priv-cell:nth-child(odd) {
+    padding-left: 0;
+  }
+  .priv-cell:nth-child(odd) {
+    border-left: 0;
+  }
+  .priv-cell:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
+}
+@media (max-width: 520px) {
+  .priv-strip {
+    grid-template-columns: 1fr;
+  }
+  .priv-cell {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .priv-cell + .priv-cell {
+    border-top: 1px solid var(--line);
+  }
+}
+
+/* ================================================================== 05 · cost === */
+
+/* The plot is the fold now, not an illustration inside it. */
+.cost {
+  position: relative;
+  z-index: var(--z-content);
+  background: var(--bg);
+  padding: var(--sec-y) 0;
+}
+.cost-head {
+  margin-bottom: clamp(40px, 6vw, 76px);
+}
+.cost-lead {
+  margin-top: var(--sp-22);
+}
+.cost-plot {
+  position: relative;
+  height: clamp(240px, 40vh, 400px);
+  border-bottom: 1px solid var(--line);
+}
+.cost-cols {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(8px, 2vw, 26px);
+  height: 100%;
+}
+.cost-col {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+/* The year the rent overtakes the purchase: a tick running from the baseline up to the
+   purchase line, and nothing above it. A full-height rule here read as a stray line
+   rather than as a marker for the one moment that carries the argument. */
+.cost-cross {
+  position: absolute;
+  bottom: 0;
+  left: calc(-0.5 * clamp(8px, 2vw, 26px));
+  width: 1px;
+  height: var(--own-pct, 0%);
+  background: var(--amber);
+  opacity: 0.55;
+}
+.cost-col[data-cross="true"] .cost-year {
+  color: var(--amber);
+}
+.cost-bar {
+  width: 100%;
+  background-color: var(--bg-panel);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.cost-axis {
+  position: absolute;
+  right: 0;
+  bottom: -26px;
+  font: 400 11px/1 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.cost-year {
+  position: absolute;
+  bottom: -26px;
+  left: 0;
+  font: 400 11px/1 var(--mono);
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+/* Paid once, then flat. A data mark rather than structure, so it carries real weight
+   instead of the 1px the skeleton uses. */
+.cost-own {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--o);
+  z-index: 2;
+}
+.cost-own-label {
+  position: absolute;
+  left: 0;
+  bottom: var(--sp-10);
+  font: 500 11px/1 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--o);
+  white-space: nowrap;
+}
+.cost-own-label b {
+  color: var(--fg);
+  font-weight: 500;
+}
+.cost-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-26);
+  margin-top: var(--sp-48);
+  padding-top: var(--sp-16);
+  border-top: 1px solid var(--line-2);
+}
+.cost-key {
+  font: 400 11px/1.5 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cost-key-cross {
+  color: var(--amber);
+}
+.cost-foot {
+  margin-left: auto;
+  max-width: 46ch;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+@media (max-width: 700px) {
+  .cost-foot {
+    margin-left: 0;
+  }
+}
+
+/* ================================================================= 06 · tiers === */
+
+/* Three cells in a hairline grid, deliberately not three equal ones. Equal columns are
+   the identical-card-grid tell, and they make the page refuse to have an opinion about
+   which tier to buy. */
+.tiers {
+  position: relative;
+  z-index: var(--z-content);
+  background: var(--bg);
+  padding: var(--sec-y) 0;
+}
+.tier-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.26fr 1fr;
+  align-items: stretch;
+  gap: 1px;
+  margin-top: clamp(40px, 5vw, 64px);
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.tier {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  padding: var(--sp-30) var(--sp-26) var(--sp-26);
+  border-radius: var(--r-0);
+}
+/* Emphasis comes from width, the ring, the panel and the primary button. Extra top
+   padding here pushed the featured price out of line with its neighbours, which reads
+   as a broken table rather than as a highlight. */
+.tier[data-featured="true"] {
+  background: var(--bg-panel);
+  padding: var(--sp-30) var(--sp-30) var(--sp-34);
+  box-shadow:
+    inset 0 0 0 1px var(--o),
+    0 26px 64px -44px rgba(255, 90, 31, 0.55);
+}
+.tier-name {
+  color: var(--muted);
+}
+.tier-price {
+  margin-top: var(--sp-20);
+  font: var(--display-weight) var(--t-mega) / 1 var(--display);
+  letter-spacing: -0.04em;
+  color: var(--fg);
+}
+.tier-cur {
+  font-size: 0.42em;
+  vertical-align: super;
+  color: var(--o);
+  margin-right: 2px;
+}
+.tier-once,
+.tier-seats,
+.tiers-note {
+  font: 400 11px/1.5 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.tier-once {
+  margin-top: var(--sp-10);
+  padding-bottom: var(--sp-22);
+  border-bottom: 1px solid var(--line);
+}
+.tier-seats {
+  margin-top: var(--sp-22);
+  color: var(--o);
+}
+.tier-feats {
+  list-style: none;
+  padding: 0;
+  margin: var(--sp-16) 0 var(--sp-30);
+  flex: 1;
+}
+.tier-feats li {
+  padding: var(--sp-8) 0;
+  font-size: var(--t-body-sm);
+  color: var(--fg-dim);
+  border-bottom: 1px solid var(--line-2);
+}
+.tier-cta {
+  width: 100%;
+}
+.tiers-note {
+  margin-top: var(--sp-22);
+}
+@media (max-width: 860px) {
+  .tier-grid {
+    grid-template-columns: 1fr;
+  }
+  .tier[data-featured="true"] {
+    padding: var(--sp-30) var(--sp-26) var(--sp-30);
+  }
+}
+
+/* ================================================================= 07 · close === */
+
+/* The one centred fold, and the second-loudest line on the page. A closing statement
+   set at body size is a closing statement nobody reads. */
+.close {
+  position: relative;
+  z-index: var(--z-content);
+  background: var(--bg);
+  padding: var(--sec-y-lg) var(--pad);
+  text-align: center;
+  border-top: 1px solid var(--line);
+}
+.close-in {
+  max-width: 940px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* The measure sits on the line, not the container: `ch` resolves against the element's
+   own font-size, so a ch cap on a 16px wrapper squeezes 51px type into a ribbon. */
+.close-line {
+  font: 400 var(--t-mega) / 1.14 var(--sans);
+  letter-spacing: -0.02em;
+  color: var(--peach);
+  max-width: 20ch;
+  text-wrap: balance;
+}
+.close-cta {
+  margin-top: clamp(32px, 4vw, 48px);
+}
+
+/* ================================================================ 08 · footer === */
+
+/* One compact ruled band, then the horizon. Column footers are the default every site
+   ships, and here three stacks of links would also fight the wordmark for the same
+   vertical space. */
+.foot {
+  position: relative;
+  z-index: var(--z-content);
+  background: var(--bg-deep);
+  border-top: 1px solid var(--line);
+  overflow: hidden;
+}
+/* The light layer spans the whole footer and sits behind everything in it, so the ember
+   field is free to wash up past the horizon behind the tagline and the nav row rather
+   than being boxed into the bottom strip. Clipped to the footer so it never spills into
+   the section above. */
+.foot-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+/* Everything the visitor reads rides above the light. */
+.foot-body {
+  position: relative;
+  z-index: 1;
+}
+.foot-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-26);
+  padding-top: var(--sp-26);
+  padding-bottom: var(--sp-26);
+}
+.foot-mark {
+  flex: none;
+  display: block;
+  opacity: 0.75;
+  transition: opacity 0.2s var(--ease);
+}
+.foot-mark:hover {
+  opacity: 1;
+}
+.foot-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-8) var(--sp-22);
+}
+.foot-link {
+  font: 400 11px/1.6 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  /* Pure white at rest, by request: brighter than the system's warm `--fg`, so the nav
+     reads crisply against the ember wash behind it. Hover keeps it white and lets the
+     orange rule (`.lnk::after`) carry the feedback instead of a colour shift. */
+  color: #fff;
+}
+.foot-link:hover {
+  color: #fff;
+}
+.foot-legal,
+.foot-tagline {
+  font: 400 11px/1.6 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.foot-legal {
+  margin-left: auto;
+  flex: none;
+}
+.foot-tagline {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--sp-20) var(--pad) 0;
+  color: var(--fg-dim);
+  border-top: 1px solid var(--line-2);
+}
+
+/* ---- the ember horizon ---------------------------------------------------------
+   The wordmark is not lit. It is the thing blocking the light: a hard hazard rule sits
+   at the page's last pixel with a bloom above it, and the letterforms are punched out
+   of the substrate so they read as a silhouette rising through the glow. The tops of
+   the letters fall outside the bloom and dissolve into the page, which is what makes
+   it read as emerging rather than as placed.
+
+   `--emerge` is scrubbed from scroll position in Footer.tsx. It defaults to 1 here, so
+   with no JS, under reduced motion, or in a headless render, the composition is simply
+   already arrived. */
+/* Height derives from the wordmark's own, so the ratio of type to glow holds at every
+   width. A fixed height left the word stranded in empty light on narrow screens, where
+   a fixed-aspect word spanning the viewport is only a few dozen pixels tall. */
+.foot-horizon {
+  position: relative;
+  height: clamp(104px, calc(94vw / 8.296 * 2.1), 46vh);
+  margin-top: clamp(40px, 6vw, 72px);
+  overflow: hidden;
+}
+.foot-glow {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 170%;
+  height: 135%;
+  transform: translateX(-50%);
+  /* Tight enough to read as a source rather than a haze. */
+  background: radial-gradient(
+    48% 96% at 50% 100%,
+    rgba(255, 90, 31, 0.4),
+    rgba(255, 90, 31, 0.13) 32%,
+    transparent 64%
+  );
+  opacity: var(--emerge, 1);
+}
+/* The live ember field that stands in for `.foot-glow` when the browser can run it.
+   Scoped under `.foot-horizon` so it outweighs the vendored `.strands-container`
+   defaults (which would otherwise force `position: relative` and a 100% box). Bled past
+   the edges and anchored low so the brightest band sits behind the wordmark, and faded
+   in with `--emerge` exactly as the static bloom was. */
+.foot-fx .foot-strands {
+  position: absolute;
+  left: 50%;
+  bottom: -113%;
+  width: 132%;
+  height: 255%;
+  /* Dropped 160px so the bright band sits low behind the wordmark. The generous height is
+     what lets the canvas still reach above the footer's top edge after that drop, so the
+     field washes up behind the nav row instead of hard-clipping into a black band there. */
+  transform: translateX(-50%) translateY(160px);
+  opacity: var(--emerge, 1);
+  pointer-events: none;
+}
+.foot-word {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  /* Wide enough to feel architectural, narrow enough that SHAREDOCK still reads: past
+     about 100vw the S and the K walk off the screen and the brand goes with them. */
+  width: 94vw;
+  /* The extracted wordmark is 3534 x 426, so 8.296:1. Held as an explicit height rather
+     than aspect-ratio, which pre-15 Safari does not support. */
+  height: calc(94vw / 8.296);
+  background: var(--bg-deep);
+  /* Resolved by the CSS pipeline so the built filename is hashed and base-relative.
+     Setting this from an inline style put the prerenderer's dev-mode asset path into
+     the shipped HTML, where it 404s: the mask then never applies and this element
+     renders as a solid rectangle covering the glow. */
+  -webkit-mask-image: url("../assets/wordmark-text.png");
+  mask-image: url("../assets/wordmark-text.png");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  transform: translateX(-50%) translateY(calc(30% + (1 - var(--emerge, 1)) * 40%));
+}
+.foot-rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--o);
+  opacity: calc(var(--emerge, 1) * 0.9);
+  box-shadow: 0 0 44px 8px rgba(255, 90, 31, 0.26);
+}
+
+/* Without mask support the silhouette cannot exist, so the horizon becomes a plain lit
+   edge rather than a broken rectangle. */
+@supports not ((mask-image: url("#x")) or (-webkit-mask-image: url("#x"))) {
+  .foot-word {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .foot-bar {
+    flex-wrap: wrap;
+    gap: var(--sp-16);
+  }
+  .foot-legal {
+    margin-left: 0;
+    width: 100%;
+  }
+}

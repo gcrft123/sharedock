@@ -1,0 +1,385 @@
+/* Onboarding recipe + shell CSS, extracted verbatim from the prototype's <style>
+   block (DS control recipes + the onboarding shell after the @FOUNDATION@ marker).
+   Foundation tokens, webfonts and .grain load globally via ui.css, so they are NOT
+   re-declared here. Two backend-forced adaptations vs the prototype:
+     - the `.rv` entrance is driven by a one-shot @keyframes (rvIn) instead of the
+       prototype's JS-added `.is-on` class, so it plays on mount with no imperative DOM;
+     - the prototype's global `html,body{height:100%}` / `body{overflow}` rules are
+       dropped — `.shell` is a self-contained 100vh grid that manages its own overflow. */
+
+@keyframes blip{50%{opacity:.25}}
+
+/* The DS recipe classes (typography, controls, statusbar, structure, telemetry) and the
+   `blip` keyframe that used to be re-declared here now live once in
+   shared/styles/ds-recipes.css, imported globally by ui.css. The values there are these
+   values, so this screen renders identically. Everything below is onboarding-specific
+   shell. Do not re-declare a ds-recipes selector here. */
+
+
+/* ============ Loaders (from user's fullscreen + modal prototypes) ============ */
+.shards{position:relative;width:var(--shard)}
+.shards{height:var(--shard)}
+.shards i{position:absolute;width:calc(50% - 3px);height:calc(50% - 3px);background:linear-gradient(135deg,var(--o-bright),var(--o-ember));opacity:0;animation:shard var(--loop) var(--ease) infinite}
+.shards i:nth-child(1){left:0;top:0}
+.shards i:nth-child(2){right:0;top:0;animation-delay:calc(var(--loop)*.12)}
+.shards i:nth-child(3){left:0;bottom:0;animation-delay:calc(var(--loop)*.24)}
+.shards i:nth-child(4){right:0;bottom:0;animation-delay:calc(var(--loop)*.36)}
+.splash{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;height:44px;transition:opacity .38s var(--ease)}
+.splash.is-out{opacity:0}
+.splash-text{font:400 14px/1.5 var(--grot);color:var(--peach);text-align:center;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+@keyframes shard{0%{opacity:0;transform:translate(var(--tx),var(--ty))}34%{opacity:1;transform:translate(0,0)}82%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(var(--tx),var(--ty))}}
+@keyframes indet{0%{left:-32%}100%{left:100%}}
+/* fullscreen */
+.loader{--loop:2.5s;--shard:84px;position:fixed;inset:0;z-index:var(--z-loader);background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.loader .shards i:nth-child(1){--tx:-9px;--ty:-9px}
+.loader .shards i:nth-child(2){--tx:9px;--ty:-9px}
+.loader .shards i:nth-child(3){--tx:-9px;--ty:9px}
+.loader .shards i:nth-child(4){--tx:9px;--ty:9px}
+.l-inner{display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center;padding:36px;z-index:1;max-width:40ch}
+.fs-bar{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--line-2);overflow:hidden}
+.fs-bar::after{content:"";position:absolute;top:0;bottom:0;width:32%;background:var(--o);box-shadow:0 0 12px rgba(255,90,31,.5);animation:indet calc(var(--loop)*1.5) cubic-bezier(.4,.1,.5,1) infinite}
+/* modal */
+.mscrim{--loop:2.5s;--shard:96px;position:fixed;inset:0;z-index:var(--z-loader);background:rgba(7,6,5,.78);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:30px;animation:dlgScrim .3s var(--ease)}
+.load-card{position:relative;z-index:1;width:342px;max-width:100%;height:410px;display:flex;flex-direction:column;background:var(--bg-panel);border:1px solid var(--line);border-radius:var(--r-2);box-shadow:0 30px 80px -50px rgba(255,90,31,.55);overflow:hidden;animation:dlgIn .35s var(--ease-out)}
+.load-card .shards i:nth-child(1){--tx:-14px;--ty:-14px}
+.load-card .shards i:nth-child(2){--tx:14px;--ty:-14px}
+.load-card .shards i:nth-child(3){--tx:-14px;--ty:14px}
+.load-card .shards i:nth-child(4){--tx:14px;--ty:14px}
+.lc-head{padding:12px 16px;border-bottom:1px solid var(--line-2);font:500 10px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.lc-body{flex:1;padding:26px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;text-align:center}
+.lc-bar{position:relative;width:100%;height:2px;background:var(--line-2);overflow:hidden}
+.lc-bar i{position:absolute;top:0;bottom:0;width:36%;background:var(--o);animation:indet calc(var(--loop)*1.4) cubic-bezier(.4,.1,.5,1) infinite}
+@keyframes dlgScrim{from{opacity:0}to{opacity:1}}
+@keyframes dlgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+[hidden]{display:none!important}
+
+/* ============ onboarding shell (DS-idiom extensions) ============ */
+/* Onboarding reuses the app's rail (dashboard/Rail), pinned open — it is position:fixed
+   and --rail-x wide, so the main column just clears it with a left margin. Solo screens
+   (the host-join branch) render no rail and go full width. */
+.shell{position:relative;min-height:100vh}
+.main{margin-left:var(--rail-x)}
+.shell.solo .main{margin-left:0}
+.rail-mark{font:400 19px/1 var(--black);letter-spacing:-.01em;text-transform:uppercase;color:var(--fg)}
+.rail-mark b{color:var(--o)}
+.rail-mark sup{font:500 8px/1 var(--mono);color:var(--o);vertical-align:super;margin-left:4px;letter-spacing:.1em}
+.rail-tag{margin-top:9px;font:500 9px/1 var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.rail-grp-h{font:500 9px/1 var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin:0 0 15px}
+.pstep{position:relative;display:grid;grid-template-columns:20px 1fr;gap:14px;padding-bottom:28px;align-items:center}
+.pstep:last-child{padding-bottom:0}
+/* Connector runs from the centre of this marker to the centre of the next (marker is 19px,
+   vertically centred in the row → centre 9.5px from the top; height:100% spans one row pitch,
+   so the line reaches both dots instead of stopping short). */
+.pstep .rod{position:absolute;left:9px;top:9.5px;height:100%;width:1px;background:var(--line)}
+.pstep:last-child .rod{display:none}
+.pstep .mk{width:19px;height:19px;border:1px solid var(--line);display:grid;place-items:center;position:relative;z-index:1;background:var(--bg-deep);transition:.25s var(--ease)}
+.pstep .mk::after{content:"";width:7px;height:7px;background:var(--faint);transition:.25s var(--ease)}
+.pstep b{font:500 11.5px/1.25 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.pstep span{display:block;font:500 8.5px/1.4 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:5px}
+.pstep.done .mk::after{background:var(--fg-dim)}
+.pstep.done b{color:var(--fg-dim)}
+.pstep.active .mk{border-color:var(--o);box-shadow:0 0 0 3px rgba(255,90,31,.12)}
+.pstep.active .mk::after{background:var(--o)}
+.pstep.active b{color:var(--o)}
+.pstep.active span{color:var(--muted)}
+.rail-handoff{display:flex;align-items:center;gap:9px;font:500 8.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding:0 0 18px 1px}
+.rail-handoff .a{color:var(--o);display:flex}
+.readoutbox{margin-top:auto;border:1px solid var(--line);background:var(--bg-well)}
+.readoutbox .rh{padding:9px 12px;border-bottom:1px solid var(--line-2);font:500 8px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.readoutbox .rh .d2{width:5px;height:5px;background:var(--o)}
+.readoutbox .rb{padding:11px 12px;display:flex;flex-direction:column;gap:9px}
+.rr{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.rr .k{color:var(--muted);text-transform:uppercase;font:500 8px/1 var(--mono);letter-spacing:.12em}
+.rr .v{color:var(--fg);text-align:right;font:500 10px/1.2 var(--mono);letter-spacing:.03em}
+.rr .v.dim{color:var(--faint)}
+#railfoot{margin-top:auto}
+.acctcard{display:flex;align-items:center;gap:11px;border:1px solid var(--line);background:var(--bg-well);padding:11px 13px}
+.acctcard .av{width:30px;height:30px;flex:none;background:var(--o);color:#0A0A0A;display:grid;place-items:center;font:400 14px/1 var(--black)}
+.acctcard .am{min-width:0}
+.acctcard .am b{display:block;font:500 11px/1.2 var(--mono);color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.02em}
+.acctcard .am span{display:block;margin-top:4px;font:500 8.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.secline{display:flex;align-items:flex-start;gap:9px;font:500 9px/1.5 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--line-2);padding-top:16px}
+.secline .sq{width:6px;height:6px;background:var(--o);flex:none;margin-top:2px}
+/* ============ onboarding rail (setup-context sidebar) ============ */
+/* OnboardRail reuses the app rail shell (.rail.rail-pinned) for its fixed width, position,
+   chrome and z-index, then fills it with the setup phase tracker + live cloud readout +
+   real identity instead of the app's nav. Every text tier is floored at --muted so it
+   clears AA on the --bg-deep rail; the authored .rail-grp-h / .pstep span / .rail-handoff
+   defaults sit at --faint, which is a non-text tier. */
+.ob-rail{overflow:hidden}
+.ob-rail:hover{width:var(--rail-x);box-shadow:none} /* pinned: no hover-expand, no black shadow */
+.ob-body{flex:1;min-height:0;display:flex;flex-direction:column;overflow-y:auto;padding:2px 20px 0}
+.ob-body .psteps{list-style:none;margin:0;padding:0}
+.ob-body .readoutbox{margin-top:auto} /* dock the telemetry low, just above identity */
+.ob-foot{flex:none;display:flex;flex-direction:column;gap:14px;padding:22px 20px 0}
+.ob-rail .rail-grp-h,
+.ob-rail .pstep span,
+.ob-rail .rail-handoff,
+.ob-rail .rr .v.dim{color:var(--muted)} /* AA floor: never --faint for real text */
+.ob-rail .rail-handoff{padding:0}
+/* Onboarding rail → slim fixed top progress strip on phones / touch. The app rail's mobile
+   bottom-bar form (dashboard.css) is wrong for a linear setup flow, so override it here;
+   .shell-scoped selectors outrank the bare .rail mobile rules. */
+@media(max-width:640px),(hover:none) and (max-width:1024px){
+  .shell .main{margin-left:0;margin-top:calc(56px + env(safe-area-inset-top,0px))}
+  .shell.solo .main{margin-top:0}
+  .shell .ob-rail{
+    top:0;right:0;bottom:auto;left:0;width:100%;height:auto;
+    flex-direction:row;align-items:center;gap:10px;
+    padding:calc(9px + env(safe-area-inset-top,0px)) 16px 9px;
+    border-right:none;border-bottom:1px solid var(--line);
+  }
+  .shell .ob-rail:hover{width:100%}
+  .shell .ob-rail .rail-brand,
+  .shell .ob-rail .rail-grp-h,
+  .shell .ob-rail .readoutbox,
+  .shell .ob-rail .ob-foot{display:none}
+  /* The tiny .mk squares vanish on the near-black strip, so progress rides the labels
+     instead: all four spread across the bar, coloured by state (done → --fg-dim, active →
+     --o, pending → --muted) — the sequence and the current phase both read at a glance. */
+  .shell .ob-rail .ob-body{flex:1;min-width:0;overflow:visible;padding:0;flex-direction:row;align-items:center}
+  .shell .ob-rail .psteps{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;width:100%}
+  .shell .ob-rail .pstep{display:block;flex:0 1 auto;min-width:0;padding:0}
+  .shell .ob-rail .pstep .rod,
+  .shell .ob-rail .pstep .mk,
+  .shell .ob-rail .pstep span{display:none}
+  .shell .ob-rail .pstep b{display:block;white-space:nowrap}
+}
+/* main / primary window */
+/* min-height:100vh so the panel surface always fills the viewport. Without it .main only
+   grows to content height, and any screen shorter than the viewport exposed the darker body
+   background (--bg) below the content as an abrupt band. */
+.main{position:relative;padding:0;min-height:100vh;overflow-x:hidden;overflow-y:auto;background:var(--bg-panel)}
+.window{position:relative;width:100%;min-height:100%;background:transparent;z-index:1;display:flex;flex-direction:column;align-items:center;animation:winin .4s var(--ease-out) both}
+@keyframes winin{from{opacity:0}to{opacity:1}}
+.window-body{padding:clamp(28px,5vw,60px);width:100%;max-width:calc(600px + 2*clamp(28px,5vw,60px));margin-block:auto}
+/* step content */
+.o-eyebrow{margin-bottom:20px}
+.o-title{font:400 clamp(1.7rem,3vw,2.6rem)/1.02 var(--black);letter-spacing:-.03em;text-transform:uppercase;color:var(--fg)}
+.o-sub{margin-top:16px;font:500 clamp(1rem,1.4vw,1.13rem)/1.5 var(--grot);color:var(--fg-dim)}
+.o-sub b{color:var(--cream);font-weight:600}
+.o-sub .k{color:var(--o);font-weight:600}
+.o-body{margin-top:30px}
+.actions{display:flex;align-items:center;gap:12px;margin-top:34px;flex-wrap:wrap}
+.actions .sp{flex:1;min-width:8px}
+.hint{font:500 9.5px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+/* fields */
+.field{display:flex;flex-direction:column;gap:11px}
+.input{height:var(--h-btn);padding:0 16px;background:var(--bg-well);border:1px solid var(--line);border-radius:var(--r-1);font:400 13.5px/1 var(--mono);color:var(--fg);letter-spacing:.02em;width:100%;transition:border-color .2s var(--ease),box-shadow .2s var(--ease)}
+.input::placeholder{color:var(--muted)}
+.input:focus{outline:none;border-color:var(--o);box-shadow:0 0 0 1px var(--o),0 0 24px -8px rgba(255,90,31,.6)}
+/* warm note */
+.note{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,138,76,.05),transparent 60%),var(--bg-well);padding:14px 16px;border-radius:var(--r-1)}
+.note .ni{color:var(--o);flex:none;margin-top:2px}
+.note p{font:400 .9rem/1.55 var(--grot);color:var(--peach);margin:0}
+.note p b{color:var(--cream);font-weight:600}
+/* fork option cards */
+.opts{display:flex;flex-direction:column;gap:12px}
+.opts.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.opts.two{grid-template-columns:1fr}}
+.opt{position:relative;text-align:left;display:flex;gap:14px;align-items:flex-start;padding:17px 18px;background:var(--bg-well);border:1px solid var(--line);border-radius:var(--r-1);cursor:pointer;transition:border-color .2s var(--ease),background .2s var(--ease),transform .12s var(--ease);font-family:var(--mono)}
+.opt:hover{border-color:var(--fg-dim);background:var(--bg-panel)}
+.opt:active{transform:translateY(1px)}
+.opt:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.opt.sel{border-color:var(--o);box-shadow:inset 0 0 0 1px var(--o)}
+.opt .oic{width:42px;height:42px;flex:none;border:1px solid var(--line);background:var(--bg-deep);display:grid;place-items:center;color:var(--o)}
+.opt .otx{min-width:0;flex:1}
+.opt .otx b{display:block;font:600 15px/1.3 var(--grot);color:var(--cream)}
+.opt .otx p{margin:6px 0 0;font:400 12px/1.6 var(--mono);color:var(--fg-dim)}
+.opt .om{margin-top:12px;display:flex;gap:7px;flex-wrap:wrap}
+.opt .oar{margin-left:auto;align-self:center;color:var(--muted);flex:none}
+.opt:hover .oar{color:var(--o)}
+.opt .otick{position:absolute;top:0;right:0;width:18px;height:18px;background:var(--o);color:#0A0A0A;display:none;place-items:center}
+.opt.sel .otick{display:grid} .opt.sel .oar{visibility:hidden}
+.opt.col{flex-direction:column;align-items:flex-start;gap:14px}
+.opt.col .oic{width:46px;height:46px}
+/* pairing-code entry */
+.joincode{display:flex;align-items:center;justify-content:center;gap:12px;padding:8px 0 4px}
+.cseg{width:106px;max-width:26vw;text-align:center;font:400 clamp(1.3rem,3.4vw,1.7rem)/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--fg);background:var(--bg-well);border:1px solid var(--line);border-radius:var(--r-1);padding:16px 4px;caret-color:var(--o);transition:border-color .2s var(--ease),box-shadow .2s var(--ease)}
+.cseg:focus{outline:none;border-color:var(--o);box-shadow:inset 0 0 0 1px var(--o)}
+.cseg::placeholder{color:var(--muted)}
+.cdash{color:var(--faint);font:400 1.4rem/1 var(--mono)}
+/* recovery key */
+/* 4 columns: the key is 64 hex → 16 groups, so a 4×4 grid fills exactly with no blank cells. */
+.keygrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line-2);border:1px solid var(--line);border-radius:var(--r-1);overflow:hidden}
+@media(max-width:520px){.keygrid{grid-template-columns:repeat(2,1fr)}}
+.kw{background:var(--bg-well);padding:11px 13px;display:flex;gap:9px;align-items:baseline;font:400 13px/1 var(--mono);color:var(--fg)}
+.kw em{font-style:normal;color:var(--faint);font-size:11px}
+.keyacts{display:flex;gap:9px;margin-top:14px}
+.check{display:flex;gap:13px;align-items:flex-start;margin-top:20px;padding:15px 16px;border:1px solid var(--line);background:var(--bg-well);border-radius:var(--r-1);cursor:pointer;transition:.2s var(--ease)}
+.check:hover{border-color:var(--fg-dim)}
+.check.on{border-color:var(--o);box-shadow:inset 0 0 0 1px var(--o)}
+.cbx{width:20px;height:20px;border:1px solid var(--muted);flex:none;display:grid;place-items:center;color:#0A0A0A;margin-top:1px;transition:.2s var(--ease)}
+.check.on .cbx{background:var(--o);border-color:var(--o)}
+.check .ct{font:400 12.5px/1.6 var(--mono);color:var(--fg-dim)}
+.check .ct b{color:var(--cream);font-weight:500}
+/* tiers grid */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+@media(max-width:640px){.tiers{grid-template-columns:1fr}}
+.tierbtn{background:var(--bg);text-align:left;cursor:pointer;border:none;font-family:var(--mono);transition:background .25s var(--ease)}
+.tierbtn:hover{background:var(--bg-panel)}
+.tierbtn.sel{background:var(--bg-panel);box-shadow:inset 0 0 0 1px var(--o)}
+.tierbtn.sel .tier-tab{display:block}
+.tierbtn .tier-tab{display:none}
+.tierbtn.sel .tier-price{color:var(--o)}
+/* host rows */
+.hostlist{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line)}
+.hostrow{background:var(--bg);display:grid;grid-template-columns:38px 1fr auto;gap:14px;align-items:center;padding:14px 16px}
+.hostrow.fresh{background:var(--bg-panel);box-shadow:inset 2px 0 0 var(--o)}
+.hostrow .hi{width:38px;height:38px;border:1px solid var(--line);background:var(--bg-well);display:grid;place-items:center;color:var(--o)}
+.hn{font:500 13px/1 var(--mono);letter-spacing:.06em;color:var(--fg);display:flex;align-items:center;gap:9px}
+.hsub{margin-top:7px;font:500 9.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.hcap{text-align:right;font:400 1rem/1 var(--black);color:var(--fg);letter-spacing:-.02em}
+.hcap span{display:block;margin-top:5px;font:500 8.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.livesq{width:6px;height:6px;background:var(--term-green);flex:none}
+/* seat row */
+.seatline{display:flex;align-items:center;gap:12px;margin-top:16px}
+.addrow{display:flex;align-items:center;gap:13px;width:100%;padding:15px 16px;background:var(--bg-well);border:1px dashed var(--line);border-radius:var(--r-1);cursor:pointer;font-family:var(--mono);transition:.2s var(--ease);text-align:left}
+.addrow:hover{border-color:var(--o);background:var(--bg-panel)}
+.addrow[disabled]{opacity:.45;cursor:not-allowed;pointer-events:none}
+.addrow .pl{width:38px;height:38px;border:1px dashed var(--muted);display:grid;place-items:center;color:var(--muted);flex:none}
+.addrow .at{font:500 12px/1.3 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--fg-dim)}
+.addrow .as{margin-left:auto;font:500 9px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+/* topology cards */
+.topo{display:grid;grid-template-columns:1fr;gap:12px}
+.tpc{position:relative;text-align:left;background:var(--bg-well);border:1px solid var(--line);border-radius:var(--r-1);padding:16px;cursor:pointer;transition:.2s var(--ease);font-family:var(--mono)}
+.tpc:hover{border-color:var(--fg-dim);background:var(--bg-panel)}
+.tpc.sel{border-color:var(--o);box-shadow:inset 0 0 0 1px var(--o)}
+.tpc .tph{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.tpc .tph b{font:600 15px/1 var(--grot);color:var(--cream)}
+.tpc .tph .rl{font:500 8.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);padding:4px 7px}
+.dia{background:var(--bg-deep);border:1px solid var(--line-2);padding:20px 18px 18px;margin-bottom:16px}
+.dctop{text-align:center}
+.dcon{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--o);color:var(--o);background:rgba(255,90,31,.09);font:500 10px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;padding:9px 16px}
+.dcon::before{content:"";width:7px;height:7px;background:var(--o)}
+.dwire{width:1px;height:22px;background:var(--line);margin:0 auto}
+.dhosts{display:flex;gap:10px}
+.dh{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg-panel);padding:13px 8px 11px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.dh .dfiles{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;min-height:28px;align-content:center}
+.df{width:28px;height:28px;background:linear-gradient(135deg,var(--o-bright),var(--o-ember));display:grid;place-items:center;font:700 13px/1 var(--black);color:#0A0A0A}
+.dh .dn{font:500 9.5px/1 var(--mono);letter-spacing:.05em;color:var(--fg-dim);text-transform:uppercase;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.dmesh{text-align:center;font:500 9px/1 var(--mono);letter-spacing:.12em;color:var(--o);text-transform:uppercase;margin-top:15px}
+.tpc p{margin:0;font:400 11.5px/1.55 var(--mono);color:var(--fg-dim)}
+.tpc p b{color:var(--cream)}
+.tpc .otick{position:absolute;top:0;right:0;width:18px;height:18px;background:var(--o);color:#0A0A0A;display:none;place-items:center}
+.tpc.sel .otick{display:grid}
+.strat{margin-top:16px;border-top:1px solid var(--line);padding-top:16px}
+.strat .sl{font:500 9px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:11px}
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.segb{text-align:left;border:1px solid var(--line);background:var(--bg-well);border-radius:var(--r-1);padding:11px 13px;cursor:pointer;font-family:var(--mono);transition:.2s var(--ease)}
+.segb:hover{border-color:var(--fg-dim)}
+.segb.sel{border-color:var(--o);box-shadow:inset 0 0 0 1px var(--o)}
+.segb b{display:block;font:600 12px/1.2 var(--grot);color:var(--cream)}
+.segb span{display:block;margin-top:4px;font:400 10px/1.4 var(--mono);color:var(--fg-dim)}
+/* download buttons */
+.dlgrid{display:flex;flex-direction:column;gap:10px}
+.dlgrid .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.steps-list{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line)}
+.sl-row{background:var(--bg);display:flex;gap:14px;align-items:center;padding:14px 16px}
+.sl-row .no{width:24px;height:24px;border:1px solid var(--o);color:var(--o);display:grid;place-items:center;font:500 11px/1 var(--mono);flex:none}
+.sl-row .tx{font:400 12.5px/1.55 var(--mono);color:var(--fg-dim)}
+.sl-row .tx b{color:var(--fg)}
+.sl-row code{color:var(--amber)}
+/* osd passkey */
+.osd{max-width:340px;margin:0 auto;border:1px solid var(--line);border-radius:var(--r-2);background:var(--bg-well);overflow:hidden}
+.osd .ob{padding:28px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
+.fp{width:54px;height:54px;color:var(--o);margin-bottom:6px}
+.osd h4{font:600 15px/1.2 var(--grot);color:var(--cream);margin:0 0 12px}
+.osd p{font:400 12px/1.5 var(--mono);color:var(--muted);max-width:30ch;margin:0 0 8px}
+/* create-account password requirements — all shown at once, live-checked */
+.pwreqs{list-style:none;margin:12px 0 2px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;width:100%}
+.pwreq{display:flex;align-items:center;gap:8px;font:500 9.5px/1.3 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);transition:color .2s var(--ease);text-align:left}
+.pwreq-mk{width:15px;height:15px;flex:none;border:1px solid var(--line);display:grid;place-items:center;color:#0A0A0A;transition:.2s var(--ease)}
+.pwreq.ok{color:var(--term-green)}
+.pwreq.ok .pwreq-mk{background:var(--term-green);border-color:var(--term-green)}
+/* pairing (steps + code, no QR) */
+.pairsteps{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);list-style:none;margin:0;padding:0}
+.pairsteps .sl-row{padding:16px}
+.codebox{margin-top:14px;border:1px solid var(--line);background:var(--bg-well);display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 18px}
+.codebox .cl{font:500 9px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.pcode-lg{font:500 clamp(1.4rem,4.4vw,2.1rem)/1 var(--mono);letter-spacing:.22em;color:var(--fg)}
+.hsub.mono{text-transform:none;letter-spacing:.02em;color:var(--muted)}
+.waiting{display:inline-flex;align-items:center;gap:9px;font:500 9.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.waiting .sq{width:9px;height:9px;background:var(--o);animation:blip 1.2s var(--ease) infinite}
+/* host name + icon (host_name screen) */
+.namewrap{display:flex;flex-direction:column;gap:16px;max-width:420px;margin:0 auto}
+/* Grid, not flex: on Safari <14.1 flex `gap` is dead, so the postcss compat adds a
+   `margin-left` fallback — but that margin combined with `justify-content:center` mis-centers
+   the row on that engine (icons drift off-centre). Grid `gap` + `justify-content:center` both
+   work there natively, so the row centres correctly with no fallback needed. */
+.iconpick{display:grid;grid-auto-flow:column;justify-content:center;gap:10px}
+.iconbtn{width:56px;height:56px;display:grid;place-items:center;background:var(--bg-well);border:1px solid var(--line);border-radius:var(--r-1);color:var(--fg-dim);cursor:pointer;transition:border-color .18s var(--ease),color .18s var(--ease),background .18s var(--ease)}
+.iconbtn:hover{border-color:var(--fg-dim);color:var(--fg);background:var(--bg-panel)}
+.iconbtn.sel{border-color:var(--o);color:var(--o);box-shadow:inset 0 0 0 1px var(--o)}
+.iconbtn:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+/* alloc slider */
+.alloc{border:1px solid var(--line);background:var(--bg-well);padding:20px}
+.alloc .top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px}
+#amt em{margin-left:.55em}
+/* Quota slider. `outline:none` on a 4px track needs a replacement, and this control decides
+   how much disk the user donates — it can't be invisible to the keyboard. The ring goes on
+   the thumb (the track is too thin to carry one) as a double box-shadow: a substrate-coloured
+   spacer, then the orange ring.
+   `:focus`, not `:focus-visible`, to match the neighbouring .input/.cseg and because
+   :focus-visible is Safari 15.4+ while this app floors at Safari 14 (Mojave webview). */
+.rng{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--line);outline:none}
+.rng::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:var(--o);border:3px solid var(--bg);cursor:pointer;box-shadow:0 0 14px -2px rgba(255,90,31,.7)}
+.rng::-moz-range-thumb{width:18px;height:18px;background:var(--o);border:3px solid var(--bg);cursor:pointer}
+.rng:focus::-webkit-slider-thumb{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--o),0 0 18px -2px rgba(255,90,31,.9)}
+.rng:focus::-moz-range-thumb{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--o),0 0 18px -2px rgba(255,90,31,.9)}
+.ticks{display:flex;justify-content:space-between;margin-top:10px;font:500 9px/1 var(--mono);letter-spacing:.1em;color:var(--faint);text-transform:uppercase}
+/* completion */
+.finale{text-align:center;max-width:460px!important;margin:0 auto}
+.done-logo{width:58px;height:auto;display:block;margin:0 auto 26px;opacity:.95}
+.done-mark{width:64px;height:64px;margin:0 auto 22px;position:relative}
+.done-mark i{position:absolute;width:27px;height:27px;background:linear-gradient(135deg,var(--o-bright),var(--o-ember))}
+.done-mark i:nth-child(1){left:2px;top:2px}.done-mark i:nth-child(2){right:2px;top:2px}.done-mark i:nth-child(3){left:2px;bottom:2px}.done-mark i:nth-child(4){right:2px;bottom:2px}
+/* "Open Sharedock" launch: the four shards snap together into the mark, an orange sweep
+   crosses, and the mark zooms through to reveal the app. Reduced motion → a plain fade. */
+.launch{position:fixed;inset:0;z-index:var(--z-loader);background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden;animation:launchIn .28s var(--ease) both}
+@keyframes launchIn{from{opacity:0}to{opacity:1}}
+.launch-mark{position:relative;width:72px;height:72px;animation:launchZoom .88s cubic-bezier(.5,0,.75,0) both}
+@keyframes launchZoom{0%{transform:scale(.7)}55%{transform:scale(1)}100%{transform:scale(16);opacity:0}}
+.launch-mark i{position:absolute;width:31px;height:31px;background:linear-gradient(135deg,var(--o-bright),var(--o-ember));animation:snap .5s var(--ease-out) both}
+.launch-mark i:nth-child(1){left:0;top:0;--sx:-26px;--sy:-26px}
+.launch-mark i:nth-child(2){right:0;top:0;--sx:26px;--sy:-26px}
+.launch-mark i:nth-child(3){left:0;bottom:0;--sx:-26px;--sy:26px}
+.launch-mark i:nth-child(4){right:0;bottom:0;--sx:26px;--sy:26px}
+@keyframes snap{0%{transform:translate(var(--sx),var(--sy));opacity:0}60%{opacity:1}100%{transform:translate(0,0);opacity:1}}
+.launch-sweep{position:absolute;left:0;right:0;top:50%;height:2px;background:var(--o);box-shadow:0 0 24px 5px rgba(255,90,31,.65);transform-origin:left center;animation:launchSweep .88s var(--ease-out) both}
+@keyframes launchSweep{0%{transform:scaleX(0);opacity:0}18%{opacity:1}70%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1);opacity:0}}
+@media(prefers-reduced-motion:reduce){
+  .launch{animation:launchIn .12s linear both}
+  .launch-mark,.launch-mark i,.launch-sweep{animation:none}
+  .launch-sweep{display:none}
+}
+.summary{border:1px solid var(--line);background:var(--bg-well);margin-top:24px;text-align:left}
+.sr{display:flex;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line-2);align-items:center}
+.sr:last-child{border-bottom:none}
+.sr .k{font:500 9px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.sr .v{font:500 12px/1.3 var(--mono);color:var(--fg);text-align:right}
+/* final host application screen */
+.hostapp{max-width:560px;margin:0 auto;text-align:center}
+.ha-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px}
+.ha-logo{width:34px;height:auto;display:block}
+.ha-badge{display:inline-flex;align-items:center;gap:9px;font:500 9.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--o);border:1px solid rgba(255,90,31,.3);background:rgba(255,90,31,.08);padding:8px 13px;border-radius:var(--r-pill)}
+.ha-badge .livesq{background:var(--o)}
+.ha-badge.off{color:var(--amber);border-color:rgba(255,178,90,.3);background:rgba(255,178,90,.08)}
+.ha-badge.off .livesq{background:var(--amber);animation:none}
+.ha-sub{margin:16px auto 0;max-width:470px;font:500 1rem/1.55 var(--grot);color:var(--fg-dim)}
+.ha-grid{margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line-2);border:1px solid var(--line-2);text-align:left}
+.ha-cell{background:var(--bg-well);padding:15px 16px;display:flex;flex-direction:column;gap:8px}
+.ha-cell.wide{grid-column:1/-1}
+.ha-cell .k{font:500 8.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.ha-cell .v{font:500 13px/1.3 var(--mono);color:var(--fg)}
+.ha-cell .v.amber{color:var(--amber)}
+.ha-cell .v.mono{font-size:11.5px;color:var(--fg-dim);word-break:break-all}
+.ha-acts{margin-top:26px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.ha-foot{margin:26px auto 0;max-width:440px;display:flex;align-items:flex-start;gap:10px;justify-content:center;text-align:left;font:500 10px/1.6 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+.ha-foot .ni{color:var(--o);flex:none;margin-top:1px}
+/* reveal */
+.rv{opacity:0;transform:translateY(16px);animation:rvIn .55s var(--ease-out) forwards;animation-delay:calc(var(--d,0)*70ms)}
+@keyframes rvIn{to{opacity:1;transform:none}}
+.rv.is-on{opacity:1;transform:none}
+.noanim .rv{animation:none;opacity:1;transform:none}
+.noanim .window{animation:none}

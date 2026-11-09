@@ -1,0 +1,25 @@
+[package]
+name = "pc-webdav"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "pc-webdav"
+path = "src/main.rs"
+
+[dependencies]
+core-webdav = { path = "../../crates/core-webdav" }
+core-fs = { workspace = true }
+core-crypto = { workspace = true }
+client-core = { workspace = true }
+core-net = { workspace = true }
+anyhow.workspace = true
+tokio = { workspace = true }
+
+[features]
+# Opt-in Iroh direct-QUIC fast path for remote mode (prefers a direct connection,
+# falls back to the relay). Off by default so the heavy quinn/rustls tree stays out
+# of the standard webdav-runner build.
+iroh = ["client-core/iroh", "core-net/iroh"]

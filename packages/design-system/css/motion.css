@@ -1,0 +1,10 @@
+/* scroll reveals: add .rv, page JS adds .is-on via IntersectionObserver (threshold .18, unobserve after) */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease-out),transform .7s var(--ease-out)}
+.rv.is-on{opacity:1;transform:none}
+/* reduced motion: reveal instantly, stop all loops (terminal renders fully typed via JS check) */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
+  .rv{opacity:1;transform:none}
+  .marquee-track{animation:none}
+  .eq i{animation:none}
+}

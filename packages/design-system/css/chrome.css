@@ -1,0 +1,44 @@
+/* status bar (30px, sticky) */
+.statusbar{position:sticky;top:0;z-index:900;height:var(--h-statusbar);display:flex;align-items:stretch;background:var(--bg-deep);border-bottom:1px solid var(--line);font:500 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);overflow:hidden}
+.sb-cell{display:flex;align-items:center;gap:8px;padding:0 14px;border-right:1px solid var(--line-2);white-space:nowrap}
+.sb-flex{flex:1;min-width:0}
+.sb-flex span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-cell:last-child{border-right:none}
+.dot{width:6px;height:6px;background:var(--o);flex:none;animation:blip 1.8s var(--ease) infinite}
+@media (max-width:640px){.sb-mid{display:none}}
+/* nav (64px, sticky under status bar) */
+.nav{position:sticky;top:0;z-index:890;height:var(--h-nav);display:flex;align-items:center;gap:26px;padding:0 var(--pad);background:rgba(10,10,10,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+@media (prefers-reduced-transparency:reduce){.nav{background:var(--bg-panel);backdrop-filter:none;-webkit-backdrop-filter:none}}
+.nav-mark{font:400 17px/1 var(--black);letter-spacing:-.01em;text-transform:uppercase;color:var(--fg);text-decoration:none;white-space:nowrap}
+.nav-mark:hover{color:var(--fg)}
+.nav-mark sup{font:500 8px/1 var(--mono);color:var(--o);vertical-align:super;margin-left:2px}
+.nav-links{display:flex;gap:26px;margin:0 auto}
+.nav-link{position:relative;padding:6px 0;font:500 11px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.nav-link::after{content:"";position:absolute;left:0;bottom:0;height:1px;width:100%;background:var(--o);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease)}
+.nav-link:hover{color:var(--fg)}
+.nav-link:hover::after{transform:scaleX(1)}
+.nav-right{display:flex;align-items:center;gap:16px;margin-left:auto}
+.nav-signin{font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--fg-dim);text-decoration:none;white-space:nowrap}
+.nav-signin:hover{color:var(--fg)}
+@media (max-width:640px){.nav-links,.nav-signin{display:none}.nav-right{margin-left:auto}}
+/* marquee — ONE per page, aria-hidden */
+.marquee{overflow:hidden;background:var(--o);color:#0A0A0A;user-select:none}
+.marquee-track{display:flex;align-items:center;width:max-content;animation:marquee 26s linear infinite}
+.marquee-item{font:400 clamp(1.1rem,2.2vw,1.7rem)/1 var(--black);letter-spacing:-.01em;text-transform:uppercase;white-space:nowrap;padding:16px 0}
+.marquee-sep{opacity:.45;padding:0 22px;font:400 1em/1 var(--mono)}
+@keyframes marquee{to{transform:translateX(-50%)}}
+/* footer */
+.footer{background:var(--bg-deep);border-top:1px solid var(--line)}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:1px;background:var(--line)}
+.footer-grid>*{background:var(--bg-deep);padding:30px 26px;position:relative}
+@media (max-width:860px){.footer-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.footer-grid{grid-template-columns:1fr}}
+.footer-col h4{font:500 10.5px/1 var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0 0 16px}
+.footer-col ul{display:flex;flex-direction:column;gap:10px}
+.footer-col a{font:400 12px/1.4 var(--mono);color:var(--fg-dim);text-decoration:none}
+.footer-col a:hover{color:var(--o)}
+.footer-brand p{font:400 11.5px/1.8 var(--mono);color:var(--muted);max-width:30ch;margin-top:14px}
+.footer-mega{overflow:hidden;padding:26px var(--pad) 0}
+.footer-mega span{display:block;font:400 clamp(4rem,16.5vw,15rem)/0.8 var(--black);letter-spacing:-.04em;text-transform:uppercase;color:var(--edge);white-space:nowrap;margin-bottom:-0.17em}
+.footer-mega b{font-weight:400;color:var(--o)}
+.footer-bottom{display:flex;flex-wrap:wrap;gap:8px 26px;justify-content:space-between;padding:12px var(--pad);border-top:1px solid var(--line-2);font:500 10px/1.6 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}

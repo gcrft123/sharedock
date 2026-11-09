@@ -1,0 +1,41 @@
+/* Sharedock · color tokens (spec §2) — one accent hue, warmth = tints of it */
+:root{
+  /* substrate · near-black, never pure #000 */
+  --bg:#0A0A0A;         /* page background */
+  --bg-panel:#0E0D0C;   /* raised panels, hovered cells */
+  --bg-well:#070605;    /* inset wells, HUD interiors, terminal body */
+  --bg-deep:#050403;    /* status bar, footer, deep insets */
+  /* foreground · warm near-white phosphor */
+  --fg:#F3EEE7;         /* primary text, headlines */
+  --fg-dim:#B6AFA5;     /* body copy, secondary text */
+  --muted:#7C766C;      /* labels, metadata, telemetry (>=11px uppercase only) */
+  --faint:#4A453E;      /* crosshair marks, disabled */
+  /* accent · HAZARD ORANGE (the only accent) */
+  --o:#FF5A1F;          /* links, selection, focus, active, the one bright button */
+  --o-bright:#FF7E33;   /* hover / emphasis */
+  --o-ember:#C7370B;    /* deep end of orange gradients */
+  /* soft human-layer warmth · SAME hue family, never new accents */
+  --amber:#FFB25A;      /* soft-layer chips, kickers */
+  --peach:#FFCE9E;      /* soft-layer body text */
+  --cream:#FFF1E2;      /* warm cell headings, highlights */
+  --blush:#FF8A4C;      /* soft-layer accent + kicker labels */
+  /* the single green · terminal success line ONLY */
+  --term-green:#4AF626;
+  /* structure */
+  --line:rgba(243,238,231,0.11);   /* primary hairlines + grid gaps */
+  --line-2:rgba(243,238,231,0.06); /* faint internal dividers, blueprint grid */
+  --edge:#1B1916;                  /* giant watermark wordmark */
+  --line-ember:rgba(255,120,60,0.20); /* warm hairline accent (hover/edges) */
+  /* semantic aliases */
+  --surface-page:var(--bg);
+  --surface-raised:var(--bg-panel);
+  --surface-inset:var(--bg-well);
+  --surface-deep:var(--bg-deep);
+  --text-primary:var(--fg);
+  --text-body:var(--fg-dim);
+  --text-meta:var(--muted);
+  --text-disabled:var(--faint);
+  --accent:var(--o);
+  --accent-hover:var(--o-bright);
+  --focus-ring:var(--o);
+}

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sharedock · Turn old devices into your own personal cloud storage</title>
+    <meta
+      name="description"
+      content="Sharedock turns devices you already own into private cloud storage. Encrypted before it leaves your machine, reachable from anywhere, bought once instead of rented forever."
+    />
+    <meta name="theme-color" content="#0A0A0A" />
+    <meta name="color-scheme" content="dark" />
+    <!-- The mark is white on transparent, so the raster favicons are composited onto
+         the substrate: a bare one disappears against a light browser tab strip. -->
+    <link rel="icon" href="./brand/mark.svg" type="image/svg+xml" />
+    <link rel="icon" href="./brand/favicon.png" sizes="180x180" />
+    <link rel="apple-touch-icon" href="./brand/favicon.png" />
+    <!-- All three families are self-hosted. A product whose pitch is "your bytes stay
+         yours" should not open the pitch by calling a third-party font CDN. Satoshi is
+         not committed (its license forbids it): run scripts/fetch-fonts.sh. -->
+    <link rel="preload" as="font" type="font/woff2" href="./brand/Saira.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="./brand/satoshi.woff2" crossorigin />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/core-proto",
+  "crates/core-crypto",
+  "crates/core-fs",
+  "crates/core-net",
+  "crates/core-webdav",
+  "crates/host-agent",
+  "crates/client-core",
+  "apps/daemon",
+  "apps/relay",
+  "apps/cli",
+  "apps/webdav",
+  "crates/e2e",
+]
+# The Tauri desktop crate is built via `cargo tauri` (needs cargo-tauri + the web
+# dist + system WebKit), so it is kept out of the plain `cargo build --workspace`.
+exclude = ["apps/desktop/src-tauri"]
+
+[workspace.package]
+edition = "2021"
+rust-version = "1.83"
+license = "AGPL-3.0-only"
+
+[workspace.dependencies]
+# internal
+core-proto = { path = "crates/core-proto" }
+core-crypto = { path = "crates/core-crypto" }
+core-fs = { path = "crates/core-fs" }
+core-net = { path = "crates/core-net" }
+core-webdav = { path = "crates/core-webdav" }
+host-agent = { path = "crates/host-agent" }
+client-core = { path = "crates/client-core" }
+# external
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "io-util", "fs", "sync", "time", "signal"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+thiserror = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+blake3 = "1"
+
+[profile.release]
+lto = "thin"
+strip = true

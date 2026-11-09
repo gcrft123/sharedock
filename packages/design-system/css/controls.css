@@ -1,0 +1,22 @@
+/* buttons (spec §7) — square, mono, ONE primary per view */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:var(--h-btn);padding:0 22px;border-radius:var(--r-1);font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--fg);background:transparent;border:1px solid var(--line);cursor:pointer;text-decoration:none;white-space:nowrap;transition:transform .12s var(--ease),border-color .25s var(--ease),background .25s var(--ease),color .25s var(--ease),box-shadow .25s var(--ease)}
+.btn:hover{border-color:var(--fg);color:var(--fg)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.btn[disabled],.btn[aria-disabled="true"]{opacity:.4;cursor:not-allowed;pointer-events:none}
+.btn-primary{background:var(--o);border-color:var(--o);color:#0A0A0A;font-weight:700;box-shadow:0 8px 26px -16px rgba(255,90,31,.85)}
+.btn-primary:hover{background:var(--o-bright);border-color:var(--o-bright);color:#0A0A0A;box-shadow:0 10px 32px -14px rgba(255,90,31,.9)}
+.btn-ghost{border-color:transparent;color:var(--fg-dim)}
+.btn-ghost:hover{border-color:transparent;color:var(--fg)}
+.btn-sm{height:var(--h-btn-sm);padding:0 16px;font-size:11px}
+.btn-arrow{display:inline-block;transition:transform .25s var(--ease)}
+.btn:hover .btn-arrow{transform:translateX(4px)}
+/* pill chip — the ONE rounded token in the system */
+.chip{display:inline-flex;align-items:center;gap:8px;height:var(--h-chip);padding:0 14px;border-radius:var(--r-pill);font:500 10.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+.chip i{width:5px;height:5px;background:currentColor;border-radius:0;flex:none}
+.chip-amber{background:rgba(255,178,90,.12);color:var(--amber);box-shadow:inset 0 0 0 1px rgba(255,178,90,.25)}
+.chip-peach{background:rgba(255,206,158,.10);color:var(--peach);box-shadow:inset 0 0 0 1px rgba(255,206,158,.22)}
+.chip-cream{background:rgba(255,241,226,.08);color:var(--cream);box-shadow:inset 0 0 0 1px rgba(255,241,226,.18)}
+/* eyebrow — max 1 per 3 sections */
+.eyebrow{display:inline-flex;align-items:center;gap:12px;font:500 11px/1 var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--o)}

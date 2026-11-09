@@ -1,0 +1,125 @@
+# CI for Sharedock. Jobs run cheapest first, so an obvious break reports in a minute.
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  # A new push supersedes an in-flight run on the same ref.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typecheck:
+    name: TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      # Recovery-key crypto. A bug here does not throw, it permanently locks a customer out
+      # of every file they own, so it runs on every commit rather than before releases.
+      - run: pnpm test
+
+  rust:
+    name: Rust
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --workspace
+      # Deliberately NOT gating on `cargo fmt --check` or `clippy -D warnings`. The tree was
+      # never rustfmt-formatted (242 files differ even at a widened line limit), so enforcing
+      # it would mean a repo-wide reformat that buries real changes in noise. Worth doing as
+      # its own commit; not worth blocking every push on until then.
+
+  windows:
+    name: Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          # The desktop crate is its own cargo workspace with its own target directory.
+          workspaces: |
+            . -> target
+            apps/desktop/src-tauri -> target
+      # `ring` assembles its x86_64 code with NASM, which the runner does not ship.
+      - name: NASM
+        run: choco install nasm --no-progress
+      - name: NASM on PATH
+        run: echo "C:\Program Files\NASM" >> $env:GITHUB_PATH
+      # MSVC and the Windows SDK are preinstalled, which `rusqlite`'s bundled SQLite needs.
+      #
+      # Deliberately BLOCKING rather than continue-on-error. If this goes red, the red is the
+      # porting task list, and a muted job is one nobody reads.
+      - run: cargo test --workspace
+      # The desktop crate needs a built frontend and a sidecar binary before tauri-build will
+      # even configure it. A debug pc-daemon is a perfectly good sidecar for a compile-and-test
+      # pass; the release script is for packaging. It has to be built explicitly: `cargo test`
+      # links the daemon only as a test harness, never as the plain binary, because the package
+      # has no integration tests that would need it. Everything is compiled already, so this
+      # step is a link.
+      # `workerd` (the local control plane) is skipped: it is not needed for the SPA build.
+      - name: Frontend for the desktop bundle
+        run: |
+          pnpm install --frozen-lockfile --filter "@app/web..."
+          pnpm -C apps/web build
+        env:
+          VITE_CONTROL_URL: ""
+      - name: Sidecar for the desktop bundle
+        run: |
+          cargo build -p pc-daemon
+          New-Item -ItemType Directory -Force apps/desktop/src-tauri/binaries | Out-Null
+          Copy-Item target/debug/pc-daemon.exe apps/desktop/src-tauri/binaries/pc-daemon-x86_64-pc-windows-msvc.exe
+      # The Windows service and mount backends, unit-tested — and the service backend also
+      # exercised for real: this registers a task with the runner's Task Scheduler, lets it
+      # start the daemon, and removes it. The mount round-trip stays ignored here because it
+      # needs the WebClient service, which a Server image does not ship.
+      - name: Desktop crate
+        working-directory: apps/desktop/src-tauri
+        run: |
+          cargo test --lib
+          cargo test --lib -- --ignored service_round_trip
+        env:
+          PC_DAEMON_BIN: ${{ github.workspace }}\target\debug\pc-daemon.exe
+
+  e2e:
+    name: End to end
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: pnpm install --frozen-lockfile
+      # wrangler.toml serves the SPA from apps/web/dist as the Worker's assets, so
+      # `wrangler dev` refuses to start without it. dist is gitignored, so it exists on a
+      # developer's machine and never on a fresh checkout — precisely the environment
+      # assumption that hid while every build was hand-made.
+      - name: Build the SPA (the Worker serves it as assets)
+        run: VITE_CONTROL_URL="" pnpm -C apps/web build
+      # Boots miniflare + a real pc-daemon and drives the whole P1 surface: auth, pairing,
+      # tier-aware purchase, seat enforcement, refund revocation, recovery, rate limits.
+      - name: P1 end-to-end
+        working-directory: services/control-plane
+        run: bash test/e2e-p1.sh

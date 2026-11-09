@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- macOS 15+ / 26+ gate ALL local-network access (unicast to private IPs incl. the direct
+       Iroh QUIC dial to a host on your LAN) behind this permission. Without the usage string
+       the OS silently blocks the LAN dial, so the console falls back to the cloud relay even on
+       the same network. Declaring it makes macOS prompt once ("… find devices on your local
+       network"); granting it lets the direct P2P fast path work. -->
+  <key>NSLocalNetworkUsageDescription</key>
+  <string>Sharedock connects directly to your host on this network for fast, end-to-end-encrypted LAN transfers. Without local network access it falls back to a slower relay through the cloud.</string>
+</dict>
+</plist>

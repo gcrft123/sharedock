@@ -1,0 +1,25 @@
+[package]
+name = "client-core"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+core-proto = { workspace = true }
+core-crypto = { workspace = true }
+core-net = { workspace = true }
+anyhow.workspace = true
+tracing.workspace = true
+tokio = { workspace = true, features = ["time"] }
+
+[features]
+# Direct-QUIC (Iroh) transport for RemoteDrive (LAN fast path). Opt-in.
+iroh = ["core-net/iroh"]
+
+[dev-dependencies]
+tokio = { workspace = true }
+host-agent = { workspace = true }
+core-crypto = { workspace = true }
+core-proto = { workspace = true }
+core-net = { workspace = true, features = ["iroh"] }

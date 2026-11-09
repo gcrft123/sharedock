@@ -1,0 +1,16 @@
+/* Sharedock · spatial tokens (spec §4) — snap everything to this scale */
+:root{
+  --sp-4:4px; --sp-6:6px; --sp-8:8px; --sp-10:10px; --sp-12:12px; --sp-14:14px;
+  --sp-16:16px; --sp-20:20px; --sp-22:22px; --sp-26:26px; --sp-30:30px;
+  --sp-34:34px; --sp-40:40px; --sp-48:48px; --sp-64:64px; --sp-88:88px;
+  --pad:clamp(20px,5vw,88px);        /* page gutter */
+  --content-max:1180px;              /* centered block max-width */
+  --sec-top:clamp(48px,7vw,96px); /* @kind spacing */ /* section header rhythm */
+  --sec-big:clamp(64px,9vw,140px); /* @kind spacing */ /* big moments */
+  /* fixed control heights */
+  --h-statusbar:30px; --h-nav:64px; --h-btn:44px; --h-btn-sm:34px; --h-chip:28px;
+  /* radius — machine skeleton stays square (grids, crosshairs, chrome, cells); warmth comes from softened corners on controls + lit objects, not blooms */
+  --r-1:5px;      /* controls — buttons */
+  --r-2:9px;      /* lit objects — HUD card, terminal window */
+  --r-pill:999px; /* the pill chip */
+}

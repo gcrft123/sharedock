@@ -1,0 +1,287 @@
+/* Reset, type, controls, motion primitives. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg-dim);
+  font: 400 var(--t-body) / 1.65 var(--sans);
+  /* Light type on a dark ground reads lighter than it is; the extra leading is not
+     decorative. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+::selection {
+  background: var(--o);
+  color: var(--bg);
+}
+
+/* ---- focus floor -------------------------------------------------------------
+   Written as two rules, in this order, and never collapsed into one. `:focus-visible`
+   is Safari 15.4+, and this site targets engines well below that. An unknown
+   pseudo-class invalidates its whole rule, so a `:focus-visible`-only ring simply does
+   not exist on those browsers and the page ships with no keyboard indicator. `:focus`
+   is the floor every engine honours; the second rule takes the ring back for pointer
+   focus and is dropped harmlessly where `:focus-visible` is unknown. Noisier on an old
+   engine is the correct way to be wrong. */
+:focus {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ---- type --------------------------------------------------------------------
+   Structural type is UPPERCASE mono or display; warm human copy is sentence-case
+   Satoshi. Mixing the two arbitrarily destroys the machine/ember signal. */
+
+.t-display {
+  font: var(--display-weight) var(--t-display) / 0.98 var(--display);
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--fg);
+  text-wrap: balance;
+}
+.t-h2 {
+  font: var(--display-weight) var(--t-h2) / 0.98 var(--display);
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--fg);
+  max-width: 16ch; /* load-bearing: past this the headline overflows on tablet */
+  text-wrap: balance;
+}
+.t-h3 {
+  font: 600 var(--t-h3) / 1.25 var(--sans);
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.t-lead {
+  font: 400 var(--t-lead) / 1.6 var(--sans);
+  color: var(--fg-dim);
+  max-width: 52ch;
+  text-wrap: pretty;
+}
+.t-body {
+  font: 400 var(--t-body) / 1.65 var(--sans);
+  color: var(--fg-dim);
+  max-width: var(--prose-max);
+  text-wrap: pretty;
+}
+/* The human register. Sentence case, peach, used only where someone is deciding
+   whether to trust this with everything they own. */
+.t-human {
+  font: 400 var(--t-lead) / 1.62 var(--sans);
+  color: var(--peach);
+  max-width: 46ch;
+  text-wrap: pretty;
+}
+.t-label {
+  font: 500 var(--t-label) / 1.4 var(--mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.t-data {
+  font: 400 var(--t-data) / 1.5 var(--mono);
+  color: var(--fg-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- controls ----------------------------------------------------------------
+   Fixed heights, mono faces, the small ember radius. Exactly one primary button is
+   visible in any given viewport. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-10);
+  height: var(--h-btn);
+  padding: 0 var(--sp-22);
+  border: 0;
+  border-radius: var(--r-1);
+  font: 500 var(--t-control) / 1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 0.2s var(--ease),
+    border-color 0.2s var(--ease),
+    color 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn-sm {
+  height: var(--h-btn-sm);
+  padding: 0 var(--sp-16);
+}
+
+.btn-primary {
+  background: var(--o);
+  color: var(--bg);
+  font-weight: 700;
+  /* The only element that glows at rest. Ember-tinted: a neutral black shadow is
+     invisible on #0A0A0A and breaks the single-light-source conceit. */
+  box-shadow: 0 8px 26px -16px rgba(255, 90, 31, 0.85);
+}
+.btn-primary:hover {
+  background: var(--o-bright);
+  box-shadow: 0 10px 32px -14px rgba(255, 90, 31, 0.9);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--fg);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.btn-secondary:hover {
+  box-shadow: inset 0 0 0 1px var(--fg);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--fg-dim);
+  padding: 0 var(--sp-12);
+}
+.btn-ghost:hover {
+  color: var(--fg);
+}
+
+/* The arrow is the one glyph exception: a control affordance, not artwork. */
+.btn .arw {
+  display: inline-block;
+  transition: transform 0.2s var(--ease);
+}
+.btn:hover .arw {
+  transform: translateX(4px);
+}
+
+/* ---- link --------------------------------------------------------------------
+   A 1px orange rule that scales in from the left. */
+.lnk {
+  color: var(--fg-dim);
+  text-decoration: none;
+  position: relative;
+  transition: color 0.2s var(--ease);
+}
+.lnk::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1px;
+  background: var(--o);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s var(--ease);
+}
+.lnk:hover {
+  color: var(--fg);
+}
+.lnk:hover::after {
+  transform: scaleX(1);
+}
+
+/* ---- reveal ------------------------------------------------------------------
+   Visible by default. The hidden start state only applies once JS has confirmed both
+   IntersectionObserver support and that the visitor has not asked for reduced motion.
+   The console's pattern sets `opacity: 0` unconditionally and waits for a class, which
+   ships blank sections to old engines and to any headless renderer. Not repeating it. */
+.rv {
+  opacity: 1;
+}
+html.js-anim .rv {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.75s var(--ease-out),
+    transform 0.75s var(--ease-out);
+}
+html.js-anim .rv.is-on {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+  }
+  .rv,
+  html.js-anim .rv {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- shared structure --------------------------------------------------------- */
+
+.wrap {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding-left: var(--pad);
+  padding-right: var(--pad);
+}
+.bleed {
+  width: 100%;
+  padding-left: var(--pad);
+  padding-right: var(--pad);
+}
+
+.rule {
+  height: 1px;
+  background: var(--line);
+  border: 0;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: var(--z-nav);
+  background: var(--o);
+  color: var(--bg);
+  padding: var(--sp-12) var(--sp-16);
+  font: 700 var(--t-control) / 1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.skip:focus {
+  left: var(--sp-12);
+  top: var(--sp-12);
+}

@@ -1,0 +1,334 @@
+/* files.css — file-browser layout on top of the Sharedock tokens. Ported from the
+   prototype's fb.css. Square machine skeleton, 1px hairlines, mono type, one hazard
+   orange; warmth = ember radius on controls + glow. The DS foundation tokens and the
+   .btn/.chip recipes load globally (ui.css + dashboard.css), so only the .fb-* layout
+   lives here.
+
+   The ONE deviation from the prototype: .fb is position:absolute and its left edge
+   clears the app-shell's fixed 66px rail (left:var(--rail-w), matching the dashboard's
+   .page margin), instead of the prototype's full-viewport position:fixed. Everything
+   else is a byte-faithful port. */
+
+.fb{position:absolute;top:0;right:0;bottom:0;left:var(--rail-w,0);display:flex;flex-direction:column;background:var(--bg);color:var(--fg);overflow:hidden;
+  --sb-w:246px;--pv-w:344px;--row-h:44px;--tile-min:168px;--glow:.5;--pad-x:22px}
+.fb[data-density="compact"]{--row-h:34px;--tile-min:146px}
+
+/* ── top toolbar (global chrome, 64px) ── */
+.fb-toolbar{flex:none;height:var(--h-nav);display:flex;align-items:center;gap:16px;padding:0 var(--pad-x);
+  background:rgba(10,10,10,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);position:relative;z-index:var(--z-sticky)}
+@media (prefers-reduced-transparency:reduce){.fb-toolbar{background:var(--bg-panel);backdrop-filter:none;-webkit-backdrop-filter:none}}
+.fb-brand{display:flex;align-items:center;gap:11px;font:400 16px/1 var(--black);letter-spacing:-.01em;text-transform:uppercase;color:var(--fg);white-space:nowrap;text-decoration:none}
+.fb-brand .mk{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--line-ember);border-radius:var(--r-1);color:var(--o);background:var(--bg-well)}
+.fb-brand sup{font:500 8px/1 var(--mono);color:var(--o);letter-spacing:.1em;margin-left:1px}
+.fb-brand b{font-weight:400}
+.fb-brand .sub{color:var(--muted)}
+.fb-tspace{flex:1}
+
+.fb-search{position:relative;display:flex;align-items:center;width:min(340px,34vw);height:var(--h-btn-sm);flex:none}
+.fb-search svg{position:absolute;left:11px;color:var(--muted);pointer-events:none}
+.fb-search input{width:100%;height:100%;padding:0 30px 0 32px;background:var(--bg-well);border:1px solid var(--line);border-radius:var(--r-1);
+  font:400 12px/1 var(--mono);letter-spacing:.04em;color:var(--fg);outline:none;transition:border-color .2s var(--ease)}
+.fb-search input::placeholder{color:var(--muted);text-transform:uppercase;letter-spacing:.14em;font-size:10.5px}
+.fb-search input:focus{border-color:var(--o)}
+.fb-search .clr{position:absolute;right:8px;display:flex;color:var(--muted);cursor:pointer;background:none;border:none;padding:2px}
+.fb-search .clr:hover{color:var(--o)}
+
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;width:var(--h-btn-sm);height:var(--h-btn-sm);flex:none;
+  background:transparent;border:1px solid var(--line);border-radius:var(--r-1);color:var(--fg-dim);cursor:pointer;
+  transition:color .2s var(--ease),border-color .2s var(--ease),background .2s var(--ease)}
+.icon-btn:hover{color:var(--fg);border-color:var(--fg)}
+.icon-btn.on{color:var(--o);border-color:var(--o)}
+.icon-btn.ghost{border-color:transparent}
+.icon-btn.ghost:hover{border-color:transparent;background:var(--bg-panel);color:var(--fg)}
+
+/* ── body row: sidebar | content | preview ── */
+.fb-body{flex:1;display:flex;min-height:0;position:relative}
+.fb-sidebar{flex:none;width:var(--sb-w);border-right:1px solid var(--line);background:var(--bg);
+  display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.fb-content{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;position:relative;container-type:inline-size}
+.fb-preview{flex:none;width:var(--pv-w);border-left:1px solid var(--line);background:var(--bg);
+  display:flex;flex-direction:column;min-height:0;overflow-y:auto}
+
+/* ── sidebar ── */
+.sb-headbar{flex:none;display:flex;align-items:center;justify-content:flex-end;height:36px;padding:6px 8px 0 12px}
+.sb-headbar .icon-btn{width:28px;height:28px}
+.sb-scroll{flex:1;overflow-y:auto;padding:8px 0 20px}
+.sb-group{padding:0 12px;margin-bottom:8px}
+.sb-h{font:500 9.5px/1 var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--muted);padding:14px 10px 8px;display:flex;justify-content:space-between;align-items:center}
+.sb-item{display:flex;align-items:center;gap:10px;width:100%;height:34px;padding:0 10px;background:transparent;border:none;
+  border-radius:var(--r-1);font:500 12px/1 var(--mono);letter-spacing:.04em;color:var(--fg-dim);cursor:pointer;text-align:left;
+  transition:background .18s var(--ease),color .18s var(--ease);position:relative}
+.sb-item .ic{color:var(--muted);flex:none;display:flex;transition:color .18s var(--ease)}
+.sb-item:hover{background:var(--bg-panel);color:var(--fg)}
+.sb-item:hover .ic{color:var(--fg-dim)}
+.sb-item.on{color:var(--o);background:var(--bg-panel);box-shadow:inset 3px 0 0 var(--o);border-radius:0}
+.sb-item.on .ic{color:var(--o)}
+.sb-item .ct{margin-left:auto;font:500 10px/1 var(--mono);letter-spacing:.1em;color:var(--muted)}
+.sb-item.drop-into{background:rgba(255,90,31,.1);box-shadow:inset 0 0 0 1px var(--o)}
+.sb-tree-row{display:flex;align-items:center}
+.sb-tree-row .tw{width:20px;height:34px;display:flex;align-items:center;justify-content:center;border:none;background:none;color:var(--muted);cursor:pointer;flex:none}
+.sb-tree-row .tw:hover{color:var(--o)}
+.sb-tree-row .tw svg{transition:transform .18s var(--ease)}
+.sb-tree-row .sb-item{flex:1;min-width:0}
+.sb-tree-row:has(.sb-item.on){box-shadow:inset 3px 0 0 var(--o);background:var(--bg-panel);border-radius:0}
+.sb-tree-row:has(.sb-item.on) .sb-item.on{box-shadow:none;background:transparent}
+.sb-item .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-foot{flex:none;padding:12px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;justify-content:space-between}
+.sb-foot .mono{font:500 9.5px/1.5 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+
+/* ── content: subbar + chips + listing ── */
+.fb-subbar{flex:none;display:flex;align-items:center;gap:14px;padding:12px var(--pad-x);border-bottom:1px solid var(--line);min-height:56px;flex-wrap:wrap}
+.crumbs{display:flex;align-items:center;gap:4px;min-width:0;overflow-x:auto;scrollbar-width:none;flex:1}
+.crumbs::-webkit-scrollbar{display:none}
+.crumb{display:flex;align-items:center;gap:4px;background:none;border:none;cursor:pointer;flex:none;
+  font:500 11.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap;padding:4px 2px;transition:color .18s var(--ease)}
+.crumb:hover{color:var(--fg)}
+.crumb.cur{color:var(--fg);cursor:default}
+.crumb.drop-into{color:var(--o)}
+.crumb-sep{color:var(--faint);flex:none;font-size:11px}
+.subbar-right{display:flex;align-items:center;gap:8px;flex:none}
+
+.fb-chips{flex:none;display:flex;align-items:center;gap:10px;padding:10px var(--pad-x);border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.fb-chips::-webkit-scrollbar{display:none}
+.chip-seg{display:flex;border:1px solid var(--line);border-radius:var(--r-1);overflow:hidden;flex:none}
+.chip-seg button{height:30px;padding:0 13px;background:transparent;border:none;border-right:1px solid var(--line);
+  font:500 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);cursor:pointer;white-space:nowrap;transition:color .2s var(--ease),background .2s var(--ease)}
+.chip-seg button:last-child{border-right:none}
+.chip-seg button:hover{color:var(--fg);background:var(--bg-panel)}
+.chip-seg button.on{color:var(--o);background:rgba(255,90,31,.08)}
+.chips-note{margin-left:auto;flex:none;font:500 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.chips-note b{color:var(--fg);font-weight:500}
+@container (max-width:800px){.chips-note{display:none}}
+.fb-empty-trash{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;margin-left:12px;flex:none;background:transparent;border:1px solid var(--line);border-radius:var(--r-1);color:var(--muted);cursor:pointer;font:500 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;transition:color .2s var(--ease),border-color .2s var(--ease)}
+.fb-empty-trash:hover{color:var(--o);border-color:var(--o)}
+/* sidebar re-expand affordance (ghost button; pops out on subbar hover when collapsed on desktop) */
+.sb-reexpand{display:none;align-items:center;justify-content:center;width:30px;height:30px;flex:none;margin-right:6px;border:none;border-radius:var(--r-1);background:transparent;color:var(--muted);cursor:pointer;transform:translateX(-8px);opacity:0;transition:transform .22s var(--ease),opacity .22s var(--ease),color .2s var(--ease),background .2s var(--ease)}
+@media (min-width:901px){.fb[data-sb="0"] .sb-reexpand{display:inline-flex}}
+.fb-subbar:hover .sb-reexpand{transform:none;opacity:1}
+.sb-reexpand:hover{color:var(--o);background:var(--bg-panel);transform:none;opacity:1}
+
+/* (The .select recipe was removed: no <select> element exists anywhere in the app, so it
+   was dead CSS. Its `outline:none` also had no focus replacement, which would have been a
+   real WCAG 2.4.7 failure the moment anyone used it. If a select is ever needed, build it
+   with a visible focus ring from the start.) */
+
+/* ── listing area ── */
+.fb-list-wrap{flex:1;min-height:0;overflow-y:auto;position:relative}
+.fb-list-wrap.dragover::after{content:"";position:absolute;inset:8px;border:1.5px dashed var(--o);border-radius:var(--r-2);pointer-events:none;z-index:5;background:rgba(255,90,31,.05)}
+.fb-drop-hint{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:6;pointer-events:none;
+  color:var(--o);font:500 12px/1 var(--mono);letter-spacing:.2em;text-transform:uppercase}
+.fb-list-wrap.dragover .fb-drop-hint{display:flex}
+
+/* GRID */
+.fb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--tile-min),1fr));gap:1px;background:var(--line);border-bottom:1px solid var(--line)}
+.fb-tile{background:var(--bg);padding:16px 16px 14px;display:flex;flex-direction:column;gap:12px;cursor:pointer;position:relative;
+  border:none;text-align:left;color:inherit;transition:background .22s var(--ease),box-shadow .22s var(--ease)}
+.fb-tile:hover{background:var(--bg-panel)}
+/* `outline:none` belongs here, not on the base rule: on an engine without :focus-visible
+   this whole rule drops, and the base must then be free to take the global :focus outline
+   as its fallback ring (see ds-foundation.css). Suppressing the outline in the base would
+   leave the tile with no focus indicator at all there. Same shape as .fb-row below.
+   The ring is an outline rather than a box-shadow on purpose: box-shadow would collide
+   with .fb-tile.sel's selection ring. */
+.fb-tile:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--o)}
+.fb-tile.sel{background:var(--bg-panel);box-shadow:inset 0 0 0 1px var(--o),inset 0 0 44px -20px rgba(255,90,31,calc(.7*var(--glow)))}
+.fb-tile.drop-into{box-shadow:inset 0 0 0 1.5px var(--o);background:rgba(255,90,31,.08)}
+.fb-tile.dragging{opacity:.4}
+.fb-tile.filler{background:var(--bg);cursor:default;pointer-events:none;box-shadow:none}
+.fb-tile .cross{position:absolute;top:-7px;left:-7px;color:var(--faint);font:400 14px/14px var(--mono);width:14px;text-align:center;z-index:2;pointer-events:none;transition:color .22s var(--ease)}
+.fb-tile:hover .cross,.fb-tile.sel .cross{color:var(--o)}
+.tile-name{font:500 12.5px/1.35 var(--mono);letter-spacing:.01em;color:var(--fg);word-break:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.fb-tile.sel .tile-name{color:var(--cream)}
+.tile-meta{display:flex;align-items:center;gap:8px;font:500 9.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:auto}
+.tile-meta .dotsep{color:var(--faint)}
+.tile-check{position:absolute;top:10px;left:10px;z-index:3;opacity:0;transition:opacity .15s var(--ease)}
+.fb-tile:hover .tile-check,.fb-tile.sel .tile-check{opacity:1}
+.tile-star{position:absolute;top:12px;right:12px;z-index:3;color:var(--amber);display:flex}
+
+/* thumbnail block */
+.thumb{position:relative;width:100%;aspect-ratio:4/3;background:var(--bg-well);border:1px solid var(--line-2);border-radius:var(--r-1);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--fg-dim)}
+.thumb.folder{color:var(--o)}
+.thumb .g{position:absolute;inset:0;opacity:.5;background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.16) 2px 3px);pointer-events:none}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb .tag{position:absolute;bottom:6px;right:6px;font:500 8.5px/1 var(--mono);letter-spacing:.14em;color:var(--muted);
+  background:var(--bg-deep);border:1px solid var(--line);padding:3px 5px;border-radius:3px}
+.thumb .dim{position:absolute;bottom:6px;left:6px;font:500 8.5px/1 var(--mono);letter-spacing:.08em;color:var(--faint)}
+.thumb.folder .fcount{position:absolute;bottom:6px;right:8px;font:500 9px/1 var(--mono);letter-spacing:.1em;color:var(--muted)}
+
+/* LIST */
+.fb-listhead,.fb-row{display:grid;grid-template-columns:28px minmax(0,1fr) 62px 86px 108px 34px;gap:12px;align-items:center;padding:0 var(--pad-x)}
+.fb-listhead{height:34px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:4}
+.fb-listhead button{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:6px;padding:0;
+  font:500 9.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);transition:color .18s var(--ease)}
+.fb-listhead button:hover{color:var(--fg)}
+.fb-listhead button.act{color:var(--o)}
+.fb-listhead .r{justify-content:flex-end}
+.fb-row{height:var(--row-h);border-bottom:1px solid var(--line-2);cursor:pointer;background:transparent;border-left:none;border-right:none;border-top:none;
+  text-align:left;color:inherit;width:100%;transition:background .16s var(--ease),box-shadow .16s var(--ease)}
+.fb-row:hover{background:var(--bg-panel)}
+.fb-row:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--o)}
+.fb-row.sel{background:var(--bg-panel);box-shadow:inset 3px 0 0 var(--o),inset 0 0 60px -30px rgba(255,90,31,calc(.9*var(--glow)))}
+.fb-row.drop-into{box-shadow:inset 0 0 0 1.5px var(--o);background:rgba(255,90,31,.08)}
+.fb-row.dragging{opacity:.4}
+.fb-row .c-name{display:flex;align-items:center;gap:11px;min-width:0}
+.fb-row .c-name .ic{flex:none;color:var(--fg-dim);display:flex}
+.fb-row.isdir .c-name .ic{color:var(--o)}
+.fb-row .c-name .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:500 12.5px/1 var(--mono);letter-spacing:.02em;color:var(--fg)}
+.fb-row .c-name .st{color:var(--amber);flex:none;display:flex}
+.c-tag{font:500 9.5px/1 var(--mono);letter-spacing:.12em;color:var(--muted);text-align:left}
+.c-tag span{border:1px solid var(--line);padding:3px 6px;border-radius:3px}
+.c-size,.c-mod{font:500 10.5px/1 var(--mono);letter-spacing:.06em;color:var(--fg-dim);text-align:right;white-space:nowrap;overflow:hidden}
+.c-mod{color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-size:10px}
+.fb-listhead button.r{justify-content:flex-end}
+.fb-row .c-more{display:flex;justify-content:center;color:var(--muted);opacity:0;transition:opacity .15s var(--ease)}
+.fb-row:hover .c-more,.fb-row.sel .c-more{opacity:1}
+.c-more button{background:none;border:none;color:inherit;cursor:pointer;display:flex;padding:3px;border-radius:3px}
+.c-more button:hover{color:var(--o)}
+/* Row/tile selection checkbox. Onboarding's recovery-key consent checkbox happens to use
+   the same class name for a different component (20px, muted border, square). Both were
+   bare, so emit order decided the winner and onboarding's won here. Scoped to the file
+   browser; the two are different components, not one shared recipe. */
+.fb .cbx{width:15px;height:15px;border:1px solid var(--line);border-radius:2px;background:var(--bg-well);display:flex;align-items:center;justify-content:center;color:var(--o);cursor:pointer;transition:border-color .15s,background .15s}
+.fb .cbx:hover{border-color:var(--o)}
+.fb .cbx.on{background:var(--o);border-color:var(--o);color:#0A0A0A}
+.fb .cbx svg{opacity:0}
+.fb .cbx.on svg{opacity:1}
+
+/* empty state */
+.fb-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:80px 24px;text-align:center;color:var(--muted)}
+.fb-empty .ring{width:60px;height:60px;border:1px solid var(--line);border-radius:var(--r-2);display:flex;align-items:center;justify-content:center;color:var(--faint)}
+.fb-empty h3{font:500 13px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--fg-dim)}
+.fb-empty p{font:400 11.5px/1.6 var(--mono);letter-spacing:.04em;color:var(--muted);max-width:34ch}
+
+/* inline rename field */
+.rename{width:100%;background:var(--bg-deep);border:1px solid var(--o);border-radius:3px;color:var(--fg);
+  font:500 12.5px/1 var(--mono);letter-spacing:.02em;padding:5px 6px;outline:none;box-shadow:0 0 0 3px rgba(255,90,31,.15)}
+
+/* ── preview drawer ── */
+.pv-head{flex:none;display:flex;align-items:center;justify-content:space-between;height:48px;padding:0 16px;border-bottom:1px solid var(--line)}
+.pv-head .t{font:500 10px/1 var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--o);display:flex;align-items:center;gap:8px}
+.pv-thumb{margin:16px;position:relative;border:1px solid var(--line);border-radius:var(--r-2);overflow:hidden;background:var(--bg-well);aspect-ratio:16/11;display:flex;align-items:center;justify-content:center}
+.pv-thumb .g{position:absolute;inset:0;opacity:.4;background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.16) 2px 3px)}
+.pv-thumb img{width:100%;height:100%;object-fit:contain}
+.pv-name{padding:0 16px;font:500 15px/1.4 var(--mono);letter-spacing:.01em;color:var(--fg);word-break:break-word}
+.pv-sub{padding:6px 16px 0;font:500 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pv-readout{margin:18px 16px 6px;border:1px solid var(--line);border-radius:var(--r-2);background:var(--bg-well);position:relative;overflow:hidden}
+.pv-readout .g{position:absolute;inset:0;opacity:.35;background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.14) 2px 3px);pointer-events:none}
+.pv-rhead{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--line);font:500 9px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);position:relative}
+.pv-rhead .live{display:flex;align-items:center;gap:6px;color:var(--o)}
+.pv-rhead .live i{width:5px;height:5px;background:var(--o);animation:blip 1.8s var(--ease) infinite}
+.pv-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--line-2);position:relative;
+  font:500 11px/1 var(--mono);letter-spacing:.04em}
+.pv-row:last-child{border-bottom:none}
+.pv-row .k{color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-size:9.5px}
+.pv-row .v{color:var(--fg);text-align:right}
+.pv-row .v em{font-style:normal;color:var(--o);margin-left:3px}
+.pv-actions{margin:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pv-actions .btn{width:100%;padding:0 12px}
+.pv-actions .btn.wide{grid-column:1/-1}
+
+/* ── selection action bar (floating) ── */
+.fb-selbar{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);z-index:var(--z-selbar);display:flex;align-items:center;gap:6px;
+  padding:8px 10px;background:var(--bg-panel);border:1px solid var(--o);border-radius:var(--r-2);
+  box-shadow:0 20px 60px -30px rgba(255,90,31,calc(.85*var(--glow))),0 10px 30px -18px rgba(0,0,0,.8);
+  animation:selbar-in .3s var(--ease-out)}
+@keyframes selbar-in{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
+.fb-selbar .n{display:flex;align-items:center;gap:9px;padding:0 12px 0 6px;font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--fg);white-space:nowrap;border-right:1px solid var(--line);margin-right:2px}
+.fb-selbar .n b{color:var(--o);font-size:14px;font-weight:700;font-family:var(--black)}
+.fb-selbar .sb-act{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 13px;background:transparent;border:1px solid transparent;border-radius:var(--r-1);
+  font:500 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--fg-dim);cursor:pointer;transition:background .18s var(--ease),color .18s var(--ease),border-color .18s var(--ease);white-space:nowrap}
+.fb-selbar .sb-act:hover{background:var(--bg-well);color:var(--fg);border-color:var(--line)}
+.fb-selbar .sb-act.danger:hover{color:var(--o);border-color:var(--o)}
+.fb-selbar .sb-act.x{padding:0 10px;color:var(--muted)}
+
+/* ── context menu + dialogs + toasts ── */
+.ctx{position:fixed;z-index:var(--z-menu);min-width:184px;background:var(--bg-panel);border:1px solid var(--line);border-radius:var(--r-2);
+  box-shadow:0 24px 60px -28px rgba(0,0,0,.9),0 0 0 1px rgba(255,120,60,.06);padding:5px;animation:ctx-in .14s var(--ease-out)}
+@keyframes ctx-in{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.ctx button{display:flex;align-items:center;gap:11px;width:100%;height:32px;padding:0 11px;background:none;border:none;border-radius:var(--r-1);
+  font:500 11px/1 var(--mono);letter-spacing:.06em;color:var(--fg-dim);cursor:pointer;text-align:left;transition:background .14s var(--ease),color .14s var(--ease)}
+.ctx button .ic{color:var(--muted);flex:none;display:flex}
+.ctx button:hover{background:var(--bg-well);color:var(--fg)}
+.ctx button:hover .ic{color:var(--o)}
+.ctx button.danger:hover{color:var(--o)}
+.ctx .sep{height:1px;background:var(--line);margin:5px 6px}
+.ctx button .kb{margin-left:auto;color:var(--faint);font-size:9.5px;letter-spacing:.1em}
+
+.scrim{position:fixed;inset:0;z-index:var(--z-modal);background:rgba(5,4,3,.7);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;padding:24px;animation:fade .2s var(--ease)}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal{width:min(440px,100%);max-height:80vh;display:flex;flex-direction:column;background:var(--bg-panel);border:1px solid var(--line);border-radius:var(--r-2);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9),0 0 0 1px rgba(255,120,60,.08);overflow:hidden;animation:modal-in .24s var(--ease-out)}
+@keyframes modal-in{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+.modal-h{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+.modal-h .t{font:500 11px/1 var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--o)}
+.modal-h .x{background:none;border:none;color:var(--muted);cursor:pointer;display:flex;padding:3px}
+.modal-h .x:hover{color:var(--o)}
+.modal-body{padding:8px;overflow-y:auto;flex:1;min-height:0}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 18px;border-top:1px solid var(--line)}
+.modal-msg{padding:18px;font:400 12.5px/1.7 var(--mono);color:var(--fg-dim)}
+.modal-msg b{color:var(--fg);font-weight:500}
+.mv-item{display:flex;align-items:center;gap:10px;width:100%;height:38px;padding:0 12px;background:none;border:none;border-radius:var(--r-1);
+  font:500 12px/1 var(--mono);letter-spacing:.03em;color:var(--fg-dim);cursor:pointer;text-align:left;transition:background .15s,color .15s}
+.mv-item .ic{color:var(--o);flex:none;display:flex}
+.mv-item:hover{background:var(--bg-well);color:var(--fg)}
+.mv-item.on{background:rgba(255,90,31,.1);color:var(--o);box-shadow:inset 0 0 0 1px var(--o)}
+.mv-item .ind{color:var(--faint)}
+.mv-item[disabled]{opacity:.35;cursor:not-allowed}
+.mv-item .tw{width:18px;height:18px;display:flex;align-items:center;justify-content:center;border:none;background:none;color:var(--muted);cursor:pointer;flex:none;margin-right:2px}
+.mv-item .tw:hover{color:var(--o)}
+.mv-item .tw svg{transition:transform .18s var(--ease)}
+
+.toasts{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:var(--z-toast);display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{display:flex;align-items:center;gap:12px;padding:11px 15px;background:var(--bg-deep);border:1px solid var(--line);border-radius:var(--r-1);
+  box-shadow:0 16px 40px -22px rgba(0,0,0,.9);font:500 11px/1 var(--mono);letter-spacing:.06em;color:var(--fg-dim);pointer-events:auto;animation:toast-in .26s var(--ease-out);max-width:90vw}
+.toast .ic{color:var(--o);flex:none;display:flex}
+.toast.ok .ic{color:var(--term-green)}
+.toast b{color:var(--fg);font-weight:500}
+.toast .undo{margin-left:6px;background:none;border:none;color:var(--o);cursor:pointer;font:500 10.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;padding:4px 6px;border-radius:3px}
+.toast .undo:hover{background:rgba(255,90,31,.12)}
+@keyframes toast-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes blip{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* scrollbars */
+.fb *::-webkit-scrollbar{width:12px;height:12px}
+.fb *::-webkit-scrollbar-track{background:transparent}
+.fb *::-webkit-scrollbar-thumb{background:transparent;border:4px solid var(--bg);border-radius:0;background-clip:content-box}
+.fb *:hover::-webkit-scrollbar-thumb{background:var(--line);background-clip:content-box}
+.fb *::-webkit-scrollbar-thumb:hover{background:var(--faint);background-clip:content-box}
+
+/* ── responsive ── */
+.fb-scrim{display:none}
+@media (max-width:1080px){.fb{--pv-w:312px}}
+@media (max-width:900px){
+  .fb-sidebar{position:absolute;top:0;bottom:0;left:0;z-index:var(--z-drawer);transform:translateX(-100%);transition:transform .28s var(--ease);box-shadow:0 0 60px -10px rgba(0,0,0,.8)}
+  .fb[data-sb="1"] .fb-sidebar{transform:none}
+  .fb-preview{position:absolute;top:0;bottom:0;right:0;z-index:var(--z-drawer);transform:translateX(100%);transition:transform .28s var(--ease);width:min(360px,86vw);box-shadow:0 0 60px -10px rgba(0,0,0,.8)}
+  .fb[data-pv="1"] .fb-preview{transform:none}
+  .fb[data-sb="1"] .fb-scrim,.fb[data-pv="1"] .fb-scrim{display:block;position:absolute;inset:0;z-index:var(--z-drawer-scrim);background:rgba(5,4,3,.55)}
+}
+@media (min-width:901px){.fb-menu-btn{display:none}.fb-sidebar.off,.fb-preview.off{display:none}}
+@media (max-width:640px){
+  .fb{--pad-x:14px}
+  .fb-brand .sub,.fb-brand sup{display:none}
+  .fb-search{width:100%;order:5;flex:1 1 100%}
+  .fb-toolbar{flex-wrap:wrap;height:auto;padding-top:10px;padding-bottom:10px;gap:10px}
+}
+/* When the rail becomes a fixed bottom bar (dashboard.css — same two conditions, keep
+   these in sync), stop the browser ending underneath it and lift the toasts clear: they
+   are position:fixed to the viewport, so they would otherwise hide behind the bar. */
+@media (max-width:640px), (hover:none) and (max-width:1024px){
+  .fb{bottom:calc(var(--h-railbar,56px) + env(safe-area-inset-bottom,0px))}
+  .toasts{bottom:calc(var(--h-railbar,56px) + env(safe-area-inset-bottom,0px) + 16px)}
+}
+/* list degrades by CONTENT-PANE width (not viewport) so it survives sidebar+preview open */
+@container (max-width:640px){
+  .fb-listhead,.fb-row{grid-template-columns:28px minmax(0,1fr) 86px 34px}
+  .c-mod,.fb-listhead .h-mod,.c-tag,.fb-listhead .h-type{display:none}
+}
+@container (max-width:440px){
+  .fb-listhead,.fb-row{grid-template-columns:28px minmax(0,1fr) 34px}
+  .c-size,.fb-listhead .h-size{display:none}
+}

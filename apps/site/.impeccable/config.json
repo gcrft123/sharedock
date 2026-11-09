@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-color",
+        "value": "#fff",
+        "createdAt": "2026-08-30T21:27:14.708Z",
+        "reason": "User explicitly requested pure-white (#fff) footer nav links"
+      }
+    ]
+  }
+}

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sharedock · Terms of Sale and Use</title>
+<style>
+  :root{color-scheme:light dark}
+  body{font:15px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;max-width:70ch;margin:0 auto;padding:40px 20px 80px;color:#1B1916;background:#FBF9F6}
+  @media (prefers-color-scheme:dark){body{color:#F3EEE7;background:#0A0A0A}code{background:#1a1a1a}}
+  h1{font-size:24px;line-height:1.2;margin:0 0 6px}
+  h2{font-size:17px;margin:34px 0 10px}
+  .meta{color:#80796F;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 28px}
+  .draft{border:1px solid #C7370B;padding:12px 14px;margin:0 0 28px;color:#C7370B}
+  li{margin:6px 0}
+  a{color:#C7370B}
+</style></head><body>
+
+<h1>Terms of Sale and Use</h1>
+<p class="meta">Sharedock · last updated 30 August 2026</p>
+
+<p class="draft"><b>Draft, not yet reviewed by a lawyer.</b> This document describes accurately
+how Sharedock works and what we commit to. It has not been checked by a qualified legal
+adviser, and it must be before Sharedock is sold to the public.</p>
+
+<p>These terms are an agreement between you and the supplier of Sharedock ("we", "us"). By
+buying or using Sharedock, you accept them.</p>
+
+<h2>1. What you are buying</h2>
+<ul>
+  <li>You buy a <b>perpetual licence</b> to use Sharedock. You pay once. There is no
+      subscription and no renewal.</li>
+  <li>Your licence covers a fixed number of <b>host machines</b>, shown on the tier you chose.
+      A host is a computer that stores your files.</li>
+  <li>You may install the client software on as many of your own devices as you like. Only
+      hosts are counted.</li>
+  <li>We may release new versions. You may install them at no extra cost while your licence
+      is valid, which is indefinitely.</li>
+</ul>
+
+<h2>2. Where your files live</h2>
+<ul>
+  <li>Your files are stored on hardware <b>you</b> own and control. We never hold them.</li>
+  <li>Your files are encrypted on your device before they leave it. We cannot read them, and
+      neither can anyone who obtains our servers or our database.</li>
+  <li>We run a coordination service that handles accounts, pairing devices, and relaying
+      encrypted traffic when a direct connection is not possible. It carries ciphertext only.</li>
+</ul>
+
+<h2>3. What you must do</h2>
+<ul>
+  <li>You must keep your master password and your recovery key safe. We cannot reset either.
+      See section 4.</li>
+  <li>You must not use Sharedock to store or share material that is illegal where you are.</li>
+  <li>You must not attempt to interfere with the coordination service, or use it to relay
+      traffic for anything other than your own Sharedock use.</li>
+  <li>You must not resell, sublicense, or redistribute the software.</li>
+</ul>
+
+<h2>4. What we cannot do for you</h2>
+<p>This is the most important section. Read it before you buy.</p>
+<ul>
+  <li><b>We cannot reset your password.</b> Your account key is encrypted with it, on your
+      device. We never receive it.</li>
+  <li><b>We cannot recover your data if you lose both your password and your recovery key.</b>
+      There is no back door, no support override, and no exception. This is the direct
+      consequence of us being unable to read your files, which is the point of the product.</li>
+  <li><b>We are not a backup service.</b> If your host machine's disk fails and you have not
+      set up a second host or your own backup, your files are gone. We never had a copy.</li>
+</ul>
+
+<h2>5. What we commit to</h2>
+<ul>
+  <li>We must not read, sell, or hand over your file contents, because we are not able to.</li>
+  <li>We must keep the coordination service running for as long as we sell the product. If we
+      ever stop, we must give you at least 90 days' notice and publish what is needed to keep
+      your hosts reachable without us.</li>
+  <li>We must tell you about a security problem that affects your data within 72 hours of
+      confirming it.</li>
+</ul>
+
+<h2>6. Availability and liability</h2>
+<ul>
+  <li><b>Trigger:</b> the coordination service is unavailable.</li>
+  <li><b>Effect:</b> devices already paired on the same network can usually still reach each
+      other directly. Remote access may stop until service resumes.</li>
+  <li><b>Limit:</b> our total liability to you is limited to what you paid for Sharedock. We
+      are not liable for lost data, lost profit, or indirect loss. Nothing here limits
+      liability that cannot lawfully be limited, including for death, personal injury, or
+      fraud.</li>
+</ul>
+
+<h2>7. Ending the agreement</h2>
+<ul>
+  <li>You may stop using Sharedock at any time. You may delete your account from Settings,
+      which erases what we hold. Your files stay on your own hardware.</li>
+  <li>We may end your licence if you materially breach these terms and do not fix the breach
+      within 30 days of us telling you about it.</li>
+  <li>If we end your licence for breach, we do not owe you a refund.</li>
+</ul>
+
+<h2>8. Refunds</h2>
+<p>See the <a href="/legal/refunds">refund policy</a>. It forms part of these terms.</p>
+
+<h2>9. Changes</h2>
+<p>We may change these terms for new purchases at any time. For an existing licence, we must
+give you 30 days' notice of a change that reduces your rights, and you may reject it by
+telling us, in which case the previous terms continue to apply to your licence.</p>
+
+<h2>10. Contact</h2>
+<p>Questions about these terms: <a href="mailto:support@REPLACE-WITH-YOUR-DOMAIN">support@REPLACE-WITH-YOUR-DOMAIN</a></p>
+
+</body></html>

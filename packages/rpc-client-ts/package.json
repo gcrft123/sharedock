@@ -1,0 +1,26 @@
+{
+  "name": "@app/rpc-client",
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node test/crypto-recovery.mjs"
+  },
+  "dependencies": {
+    "@noble/hashes": "1.5.0",
+    "@stablelib/ed25519": "^2.1.0",
+    "@stablelib/hkdf": "^2.0.1",
+    "@stablelib/random": "^2.0.1",
+    "@stablelib/scrypt": "^2.0.1",
+    "@stablelib/sha256": "^2.0.1",
+    "@stablelib/x25519": "^2.0.1",
+    "@stablelib/xchacha20poly1305": "^2.0.1"
+  }
+}
